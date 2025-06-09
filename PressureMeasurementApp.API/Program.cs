@@ -1,0 +1,52 @@
+
+using Microsoft.EntityFrameworkCore;
+using PressureMeasurementApp.API.Data.Entitites;
+using PressureMeasurementApp.API.Infrastructure.Context;
+using PressureMeasurementApp.API.Infrastructure.Repositories;
+using PressureMeasurementApp.API.Interfaces;
+using PressureMeasurementApp.API.Services;
+
+namespace PressureMeasurementApp.API
+{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            var builder = WebApplication.CreateBuilder(args);
+
+            builder.WebHost.UseUrls("http://0.0.0.0:5000");
+            builder.Services.AddCors(policy => policy.AddPolicy("default", opt =>
+            {
+                opt.AllowAnyHeader();
+                opt.AllowCredentials();
+                opt.AllowAnyMethod();
+                opt.SetIsOriginAllowed(_ => true);
+            }));
+            builder.Services.AddControllers();
+            builder.Services.AddHttpClient();
+            builder.Services.AddHttpContextAccessor();
+            var connectionString = builder.Configuration.GetConnectionString("AppDbConnection");
+            builder.Services.AddDbContext<AppDbContext>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+            builder.Services.AddSwaggerGen();
+            builder.Services.AddAutoMapper(typeof(Program));
+            builder.Services.AddTransient<IRepository<PressureMeasurement>, PressureMeasurementRepository>();
+            builder.Services.AddTransient<IPressureConverter, PressureConverter>();
+            builder.Services.AddTransient<IPressureMeasurementService, PressureMeasurementService>();
+
+            var app = builder.Build();
+
+            app.UseSwagger();
+            app.UseSwaggerUI();
+            app.UseCors("default");
+            app.UseRouting();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller}/{action=Index}/{id?}");
+            });
+            app.Run();
+        }
+    }
+}
