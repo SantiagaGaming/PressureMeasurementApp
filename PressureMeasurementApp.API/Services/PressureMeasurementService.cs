@@ -2,13 +2,15 @@
 using PressureMeasurementApp.API.Data.Dto;
 using PressureMeasurementApp.API.Data.Entitites;
 using PressureMeasurementApp.API.Interfaces;
+using System.Diagnostics.Metrics;
+using System.Text.Json;
 
 namespace PressureMeasurementApp.API.Services
 {
     public class PressureMeasurementService(
      IRepository<PressureMeasurement> repository,
      IPressureConverter converter,
-     IMapper mapper,
+     IMapper mapper,IKafkaProducer kafkaProducer,
      ICacheService cache) : IPressureMeasurementService
     {
         public async Task<IEnumerable<PressureMeasurement>> GetMeasurementsAsync(
@@ -18,27 +20,44 @@ namespace PressureMeasurementApp.API.Services
         }
 
         public async Task<PressureMeasurement> CreateMeasurementAsync(
-            List<PressureDto> pressures, LifestyleDto lifestyle)
+     List<PressureDto> pressures, LifestyleDto lifestyle)
         {
             try
             {
                 var measurement = converter.ConvertPressure(pressures, lifestyle);
                 await repository.CreateAsync(measurement);
-                await cache.RemoveAsync("pressure:latest");
+
+                var dto = new
+                {
+                    Id = measurement.Id,
+                    Date = measurement.MeasureDate,
+                    UpperPressure = measurement.UpperPressure,
+                    LowerPressure = measurement.LowerPressure,
+                    Message = "New pressure measurement added"
+                };
+
+                string json = JsonSerializer.Serialize(dto);
+                await kafkaProducer.PublishAsync("pressure-events", json);
+
                 return measurement;
             }
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
-
         }
 
         public async Task UpdateMeasurementAsync(int id, UpdateMeasurementRequest request)
         {
             var existing = await repository.GetEntityAsync(id)
                 ?? throw new ArgumentException($"Can't find measurement with id:{id}", nameof(request));
+            var dto = new
+            {
+                Message = $"Measurement with id{id} was updated"
+            };
 
+            string json = JsonSerializer.Serialize(dto);
+            await kafkaProducer.PublishAsync("pressure-events", json);
             var updated = mapper.Map(request, existing);
             await repository.UpdateAsync(id, updated);
             await cache.RemoveAsync($"pressure:{id}");
@@ -49,6 +68,13 @@ namespace PressureMeasurementApp.API.Services
            var result = await repository.DeleteAsync(id);
             if (!result)
                 throw new ArgumentException($"Can't find measurement with id:{id}", nameof(id));
+            var dto = new
+            {
+                Message = $"Measurement with id{id} was deleted"
+            };
+
+            string json = JsonSerializer.Serialize(dto);
+            await kafkaProducer.PublishAsync("pressure-events", json);
             await cache.RemoveAsync($"pressure:{id}");
         }
 

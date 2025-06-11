@@ -35,6 +35,7 @@ namespace PressureMeasurementApp.API
                 return ConnectionMultiplexer.Connect(configuration);
             });
             builder.Services.AddSingleton<ICacheService, RedisCacheService>();
+            builder.Services.AddSingleton<IKafkaProducer, KafkaProducer>();
             builder.Services.AddAutoMapper(typeof(Program));
             builder.Services.AddTransient<IRepository<PressureMeasurement>, PressureMeasurementRepository>();
             builder.Services.AddTransient<IPressureConverter, PressureConverter>();

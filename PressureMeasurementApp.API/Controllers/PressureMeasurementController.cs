@@ -11,7 +11,7 @@ namespace PressureMeasurementApp.API.Controllers
     {
 
         [HttpGet("withDates")]
-        public async Task<ActionResult<IEnumerable<PressureMeasurementResponse>>> GetAllWithDate(
+        public async Task<ActionResult<IEnumerable<PressureMeasurementResponse>>> GetAllWithDates(
             DateTime from, DateTime till)
         {
             var measurements = await measurementService.GetMeasurementsAsync(from, till);
