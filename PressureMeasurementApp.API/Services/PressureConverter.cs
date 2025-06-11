@@ -40,6 +40,8 @@ namespace PressureMeasurementApp.API.Services
 
             if (pressures.Count != 4)
                 throw new ArgumentException("Pressures count must be equal to 4", nameof(pressures));
+            if (pressures.Any(p => !WrongPressureMeasurement(p)))
+                throw new ArgumentException("One or more pressure measurements have invalid values", nameof(pressures));
         }
 
         private int CalculateAverage(IEnumerable<int> values)
@@ -62,6 +64,15 @@ namespace PressureMeasurementApp.API.Services
                 return 4; 
 
             return null; 
+        }
+        public bool WrongPressureMeasurement(PressureDto pressure)
+        {
+            return pressure.UpperPressure <= 350
+                   && pressure.LowerPressure <= 350
+                   && pressure.UpperPressure >= 0
+                   && pressure.LowerPressure >= 0
+                   && pressure.Heartbeat >= 0
+                   && pressure.Heartbeat <= 300;
         }
     }
 }

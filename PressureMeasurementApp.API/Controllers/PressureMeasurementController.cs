@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using PressureMeasurementApp.API.Data.Dto;
-using PressureMeasurementApp.API.Exceptions;
 using PressureMeasurementApp.API.Interfaces;
 
 namespace PressureMeasurementApp.API.Controllers
@@ -11,19 +10,32 @@ namespace PressureMeasurementApp.API.Controllers
     public class PressureMeasurementController(IPressureMeasurementService measurementService, IMapper mapper) : ControllerBase
     {
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<PressureMeasurementResponse>>> GetAll(
+        [HttpGet("withDates")]
+        public async Task<ActionResult<IEnumerable<PressureMeasurementResponse>>> GetAllWithDate(
             DateTime from, DateTime till)
         {
             var measurements = await measurementService.GetMeasurementsAsync(from, till);
+            return Ok(mapper.Map<IEnumerable<PressureMeasurementResponse>>(measurements));
+        }
+
+        [HttpGet("latest")]
+        public async Task<ActionResult<IEnumerable<PressureMeasurementResponse>>> GetLatest()
+        {
+            var measurements = await measurementService.GetLatestMeasurementsAsync();
             return Ok(mapper.Map<IEnumerable<PressureMeasurementResponse>>(measurements));
         }
         [HttpGet("{id}")]
         public async Task<ActionResult<PressureMeasurementResponse>> Get(
        int id)
         {
-          var measurement = await measurementService.GetMeasurementAsync(id);
-            return Ok(mapper.Map<PressureMeasurementResponse>(measurement));
+            try
+            {
+                var measurement = await measurementService.GetMeasurementAsync(id);
+                return Ok(mapper.Map<PressureMeasurementResponse>(measurement));
+            }
+            catch (Exception ex) {
+                return NotFound(ex.Message);
+            }
         }
 
         [HttpPost]
@@ -35,12 +47,12 @@ namespace PressureMeasurementApp.API.Controllers
                 var measurement = await measurementService.CreateMeasurementAsync(
                     request.Pressures, request.Lifestyle);
 
-                return 
+                return
                     mapper.Map<PressureMeasurementResponse>(measurement);
             }
-            catch (MeasurementValidationException ex)
+            catch (Exception ex)
             {
-                return BadRequest(new { Error = ex.Message });
+                return BadRequest(new { Error = "Error while parsing measurments values. Please try enter valid values!" });
             }
         }
 
@@ -53,9 +65,9 @@ namespace PressureMeasurementApp.API.Controllers
                 await measurementService.UpdateMeasurementAsync(id, request);
                 return NoContent();
             }
-            catch (MeasurementNotFoundException)
+            catch (Exception ex)
             {
-                return NotFound();
+                return NotFound(ex.Message);
             }
         }
 
@@ -67,9 +79,9 @@ namespace PressureMeasurementApp.API.Controllers
                 await measurementService.DeleteMeasurementAsync(id);
                 return NoContent();
             }
-            catch (MeasurementNotFoundException)
+            catch (Exception ex)
             {
-                return NotFound();
+                return NotFound(ex.Message);
             }
         }
     }

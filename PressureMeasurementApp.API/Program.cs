@@ -5,6 +5,7 @@ using PressureMeasurementApp.API.Infrastructure.Context;
 using PressureMeasurementApp.API.Infrastructure.Repositories;
 using PressureMeasurementApp.API.Interfaces;
 using PressureMeasurementApp.API.Services;
+using StackExchange.Redis;
 
 namespace PressureMeasurementApp.API
 {
@@ -28,6 +29,12 @@ namespace PressureMeasurementApp.API
             var connectionString = builder.Configuration.GetConnectionString("AppDbConnection");
             builder.Services.AddDbContext<AppDbContext>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
             builder.Services.AddSwaggerGen();
+            builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+            {
+                var configuration = ConfigurationOptions.Parse(builder.Configuration.GetConnectionString("Redis"));
+                return ConnectionMultiplexer.Connect(configuration);
+            });
+            builder.Services.AddSingleton<ICacheService, RedisCacheService>();
             builder.Services.AddAutoMapper(typeof(Program));
             builder.Services.AddTransient<IRepository<PressureMeasurement>, PressureMeasurementRepository>();
             builder.Services.AddTransient<IPressureConverter, PressureConverter>();

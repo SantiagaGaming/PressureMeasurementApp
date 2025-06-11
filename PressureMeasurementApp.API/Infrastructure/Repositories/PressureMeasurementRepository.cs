@@ -64,7 +64,13 @@ namespace PressureMeasurementApp.API.Infrastructure.Repositories
             await SaveAsync();
             return true;
         }
-
+        public async Task<IEnumerable<PressureMeasurement>> GetLatestAsync(int count)
+        {
+            return await _dbContext.PressureMeasurements
+                .OrderByDescending(p => p.MeasureDate)
+                .Take(count)
+                .ToListAsync();
+        }
         protected virtual void Dispose(bool disposing)
         {
             if (!_disposed)

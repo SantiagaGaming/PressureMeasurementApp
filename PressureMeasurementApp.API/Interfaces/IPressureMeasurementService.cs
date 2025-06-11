@@ -6,6 +6,7 @@ namespace PressureMeasurementApp.API.Interfaces
     public interface IPressureMeasurementService
     {
         Task<IEnumerable<PressureMeasurement>> GetMeasurementsAsync(DateTime from, DateTime till);
+        Task<IEnumerable<PressureMeasurement>> GetLatestMeasurementsAsync();
         Task<PressureMeasurement> GetMeasurementAsync(int id);
         Task<PressureMeasurement> CreateMeasurementAsync(
             List<PressureDto> pressures, LifestyleDto lifestyle);
