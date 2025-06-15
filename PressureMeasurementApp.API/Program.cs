@@ -1,5 +1,6 @@
 
 using Microsoft.EntityFrameworkCore;
+using PressureMeasurementApp.API.Data.Dto;
 using PressureMeasurementApp.API.Data.Entitites;
 using PressureMeasurementApp.API.Infrastructure.Context;
 using PressureMeasurementApp.API.Infrastructure.Repositories;
@@ -38,6 +39,7 @@ namespace PressureMeasurementApp.API
             builder.Services.AddSingleton<IKafkaProducer, KafkaProducer>();
             builder.Services.AddAutoMapper(typeof(Program));
             builder.Services.AddTransient<IRepository<PressureMeasurement>, PressureMeasurementRepository>();
+            builder.Services.AddTransient<IParseToFile<PressureMeasurementToFile>, MeasurementsParseToFile>();
             builder.Services.AddTransient<IPressureConverter, PressureConverter>();
             builder.Services.AddTransient<IPressureMeasurementService, PressureMeasurementService>();
 

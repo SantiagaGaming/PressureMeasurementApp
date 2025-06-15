@@ -2,7 +2,6 @@
 using PressureMeasurementApp.API.Data.Dto;
 using PressureMeasurementApp.API.Data.Entitites;
 using PressureMeasurementApp.API.Interfaces;
-using System.Diagnostics.Metrics;
 using System.Text.Json;
 
 namespace PressureMeasurementApp.API.Services
