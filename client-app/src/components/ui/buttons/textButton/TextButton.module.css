@@ -1,0 +1,101 @@
+.button {
+    display: inline-flex;
+    padding: 9px 16px;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    border-radius: 12px;
+    width: 100%;
+}
+.imgLight {
+    width: 16;
+    height: 16;
+    color: #fff;
+}
+.imgDark {
+    width: 16;
+    height: 16;
+    color: #393939;
+}
+.primary {
+    background: #696cff;
+    border: var(--Components-Button-Global-lineWidth, 1px) solid #696cff;
+    color: #fff;
+}
+.secondary {
+    background: white;
+    border: var(--Components-Button-Global-lineWidth, 1px) solid #696cff;
+    color: #393939;
+}
+.dark {
+    background: #212121;
+    border: var(--Components-Button-Global-lineWidth, 1px) solid #212121;
+    color: #fff;
+}
+.light {
+    background: white;
+    border: var(--Components-Button-Global-lineWidth, 1px) solid #d0d5e3;
+    color: #393939;
+}
+.light {
+    background: white;
+    border: var(--Components-Button-Global-lineWidth, 1px) solid #d0d5e3;
+    color: #393939;
+}
+
+.primary:hover {
+    background: #797cff;
+}
+.primary:active {
+    background: #8a8cff;
+}
+.primary:disabled {
+    background: #eef;
+}
+.secondary:hover {
+    border: var(--Components-Button-Global-lineWidth, 1px) solid #5d60e2;
+    background: #f7f7fa;
+}
+.secondary:active {
+    border: var(--Components-Button-Global-lineWidth, 1px) solid #5154c6;
+    background: #eef0f8;
+}
+.secondary:disabled {
+    border: var(--Components-Button-Global-lineWidth, 1px) solid #e6e6e6;
+}
+.dark:hover {
+    background: #393939;
+}
+.dark:active {
+    background: #525252;
+}
+.dark:disabled {
+    background: #e6e6e6;
+}
+.light:hover {
+    border: var(--Components-Button-Global-lineWidth, 1px) solid #696cff;
+}
+.light:active {
+    border: var(--Components-Button-Global-lineWidth, 1px) solid #5d60e2;
+    background: #f5f6fa;
+}
+.light:disabled {
+    border: var(--Components-Button-Global-lineWidth, 1px) solid #e6e6e6;
+}
+.danger {
+    background: #ff4040;
+    border: var(--Components-Button-Global-lineWidth, 1px) solid #ff4040;
+    color: #fff;
+}
+
+.danger:hover {
+    background: #ff5a5a;
+}
+
+.danger:active {
+    background: #e63b3b;
+}
+
+.danger:disabled {
+    background: #ffdede;
+}

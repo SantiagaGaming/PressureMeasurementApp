@@ -12,6 +12,7 @@ namespace PressureMeasurementApp.API.Services
      IMapper mapper,IKafkaProducer kafkaProducer,
      ICacheService cache) : IPressureMeasurementService
     {
+        private const string _cacheKey = "pressure:latest";
         public async Task<IEnumerable<PressureMeasurement>> GetMeasurementsAsync(
             DateTime from, DateTime till)
         {
@@ -37,6 +38,7 @@ namespace PressureMeasurementApp.API.Services
 
                 string json = JsonSerializer.Serialize(dto);
                 await kafkaProducer.PublishAsync("pressure-events", json);
+                await cache.RemoveAsync(_cacheKey);
 
                 return measurement;
             }
@@ -59,7 +61,7 @@ namespace PressureMeasurementApp.API.Services
             await kafkaProducer.PublishAsync("pressure-events", json);
             var updated = mapper.Map(request, existing);
             await repository.UpdateAsync(id, updated);
-            await cache.RemoveAsync($"pressure:{id}");
+            await cache.RemoveAsync(_cacheKey);
         }
 
         public async Task DeleteMeasurementAsync(int id)
@@ -94,8 +96,8 @@ namespace PressureMeasurementApp.API.Services
 
         public async Task<IEnumerable<PressureMeasurement>> GetLatestMeasurementsAsync()
         {
-            const string cacheKey = "pressure:latest";
-            var cached = await cache.GetAsync<IEnumerable<PressureMeasurement>>(cacheKey);
+   
+            var cached = await cache.GetAsync<IEnumerable<PressureMeasurement>>(_cacheKey);
 
             if (cached != null)
                 return cached;
@@ -103,7 +105,7 @@ namespace PressureMeasurementApp.API.Services
             var latest = await repository.GetLatestAsync(10);
 
             var list = latest.ToList(); 
-            await cache.SetAsync(cacheKey, list);
+            await cache.SetAsync(_cacheKey, list);
 
             return list;
         }

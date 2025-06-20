@@ -1,0 +1,13 @@
+.checkboxContainer {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+.checkboxContainer label {
+    margin-right: 10px;
+    flex: 0 0 48%;
+}
+.checkboxContainer input[type='checkbox'] {
+    margin-top: 7px;
+    transform: scale(1.7);
+}

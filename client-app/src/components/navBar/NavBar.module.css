@@ -1,0 +1,32 @@
+.navBar {
+    left: 0;
+    height: 90vh;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    width: 50px;
+    transition: width 0.3s ease;
+    padding-top: 12px;
+    border-radius: 12px;
+
+    z-index: 1000;
+}
+
+.navBar.expanded {
+    width: 230px;
+}
+
+.arrowWrapper {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    transition: padding-left 0.3s ease;
+    padding-left: 0;
+    margin-bottom: 10px;
+}
+
+.navBar.expanded .arrowWrapper {
+    padding-left: 160px;
+}

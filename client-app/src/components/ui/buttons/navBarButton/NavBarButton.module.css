@@ -1,0 +1,46 @@
+.button {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 8px 12px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    transition: background-color 0.2s ease;
+}
+.buttonActive {
+    background-color: #eeeeff;
+    border-right: 2px solid #696cff;
+}
+
+.button:hover {
+    background-color: #eeeeff;
+}
+
+.title {
+    opacity: 0;
+    width: 0;
+    transition:
+        opacity 0.3s ease,
+        width 0.3s ease;
+    overflow: hidden;
+}
+
+.button.expanded .title {
+    opacity: 1;
+    width: auto;
+}
+.img {
+    width: 22px;
+    height: 22px;
+    filter: brightness(1.2) grayscale(1) contrast(0.9);
+    transition: filter 0.3s ease;
+}
+
+.buttonActive .img {
+    filter: brightness(0) saturate(100%) invert(30%) sepia(78%) saturate(750%)
+        hue-rotate(206deg);
+}
