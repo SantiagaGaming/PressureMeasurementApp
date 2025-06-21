@@ -12,11 +12,11 @@ interface EditMeasurementModalProps {
     ) => Promise<boolean>;
 }
 
-const EditMeasurementModal: React.FC<EditMeasurementModalProps> = ({
+const EditMeasurementModal= ({
     onClose,
     measurement,
     onSubmit,
-}) => {
+}:EditMeasurementModalProps) => {
     const [editedMeasurement, setEditedMeasurement] =
         React.useState<Partial<PressureMeasurementResponse> | null>(null);
 

@@ -1,8 +1,9 @@
+import { StaticImageData } from 'next/image';
 import styles from './IconButton.module.css';
 
 interface IconButtonProps {
     onClick?: () => void;
-    icon: string;
+    icon: string| StaticImageData;
     width: number;
     height: number;
     expanded?: boolean;
@@ -23,7 +24,7 @@ const IconButton = ({
         <button className={styles.button} onClick={onClick} disabled={!enabled}>
             <div className={styles.iconWrapper}>
                 <img
-                    src={`/public/${icon}`}
+                    src={icon}
                     width={width}
                     height={height}
                     className={expanded ? styles.rotated : ''}

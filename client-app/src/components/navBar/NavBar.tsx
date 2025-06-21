@@ -1,8 +1,10 @@
-import { useState } from 'react';
+'use client';
+import { useState, useEffect } from 'react';
 import styles from './NavBar.module.css';
 import IconButton from '../ui/buttons/iconButton/IconButton';
 import * as constants from '@/utils/constants';
 import NavBarButton from '../ui/buttons/navBarButton/NavBarButton';
+import { usePathname } from 'next/navigation';
 
 interface NavBarProps {
     onToggle?: (expanded: boolean) => void;
@@ -13,11 +15,16 @@ type NavLink = 'measurements' | 'about';
 
 const NavBar = ({ onToggle, baseUrl = '' }: NavBarProps) => {
     const [expanded, setExpanded] = useState(false);
-    const [activeLink, setActiveLink] = useState<NavLink>(() =>
-        decodeURIComponent(window.location.pathname).includes('measurements')
-            ? 'measurements'
-            : 'about'
-    );
+    const [activeLink, setActiveLink] = useState<NavLink>('measurements');
+    const pathname = usePathname();
+
+    useEffect(() => {
+        if (pathname?.includes('measurements')) {
+            setActiveLink('measurements');
+        } else if (pathname?.includes('about')) {
+            setActiveLink('about');
+        }
+    }, [pathname]);
 
     const toggleExpand = () => {
         setExpanded((prev) => {
@@ -27,9 +34,8 @@ const NavBar = ({ onToggle, baseUrl = '' }: NavBarProps) => {
         });
     };
 
-    const handleClick = (link: NavLink) => () => {
+    const handleClick = (link: NavLink) => {
         setActiveLink(link);
-        window.location.href = `${baseUrl}/${link}`;
     };
 
     return (
@@ -48,16 +54,19 @@ const NavBar = ({ onToggle, baseUrl = '' }: NavBarProps) => {
                 title="Measurements"
                 expanded={expanded}
                 enabled={activeLink === 'measurements'}
-                onClick={handleClick('measurements')}
+                onClick={() => handleClick('measurements')}
+        
             />
             <NavBarButton
                 logoName={constants.suppliers}
                 title="About"
                 expanded={expanded}
                 enabled={activeLink === 'about'}
-                onClick={handleClick('about')}
+                onClick={() => handleClick('about')}
+     
             />
         </div>
     );
 };
+
 export default NavBar;

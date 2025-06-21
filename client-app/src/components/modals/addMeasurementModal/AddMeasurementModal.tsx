@@ -8,7 +8,7 @@ interface AddMeasurementModalProps {
   onSubmit: (data: { Pressures: PressureDto[]; Lifestyle: LifestyleDto }) => Promise<boolean>;
 }
 
-const AddMeasurementModal: React.FC<AddMeasurementModalProps> = ({ open, onClose, onSubmit }) => {
+const AddMeasurementModal= ({ open, onClose, onSubmit }:AddMeasurementModalProps) => {
   const [pressures, setPressures] = useState<PressureDto[]>([
     { UpperPressure: 0, LowerPressure: 0, Heartbeat: 0 },
     { UpperPressure: 0, LowerPressure: 0, Heartbeat: 0 },

@@ -1,8 +1,9 @@
+import { StaticImageData } from 'next/image';
 import styles from './NavBarButton.module.css';
 
 interface NavBarButtonProps {
     onClick: () => void;
-    logoName: string;
+    logoName: string| StaticImageData;
     title: string;
     expanded?: boolean;
     enabled?: boolean;
@@ -24,7 +25,7 @@ const NavBarButton = ({
             onClick={onClick}
             title={title}
         >
-            <img src={`/publi/${logoName}`} alt="" className={styles.img} />
+            <img src={logoName} alt="" className={styles.img} />
             <span className={styles.title}>{title}</span>
         </button>
     );

@@ -1,23 +1,36 @@
-export const arrow = 'images/arrow.png';
-export const arrowDown = 'images/arrowDown.svg';
-export const clip = 'images/clip.svg';
-export const close = 'images/close.svg';
-export const cross = 'images/cross.svg';
-export const trash = 'images/delete.svg';
-export const filter = 'images/filter.svg';
-export const filterFilled = 'images/filterFilled.svg';
-export const bell = 'images/bell.png';
-export const chats = 'images/chats.png';
-export const logoUrl = 'images/g10.svg';
-export const history = 'images/history.png';
-export const loginLogo = 'images/loginLogo.png';
-export const requests = 'images/requests.png';
-export const smallLogo = 'images/smallLogo.svg';
-export const statistics = 'images/statistics.png';
-export const suppliers = 'images/suppliers.png';
-export const users = 'images/users.png';
-export const needle = 'images/needle.png';
-export const search = 'images/search.svg';
-export const dropDown = 'images/dropDown.svg';
-export const selection = 'images/selection.svg';
-export const clipWithFolder = 'images/clipWithFolder.svg';
+export const arrow = '/images/arrow.png';
+export const arrowDown = '/images/arrowDown.svg';
+export const clip = '/images/clip.svg';
+export const close = '/images/close.svg';
+export const cross = '/images/cross.svg';
+export const trash = '/images/delete.svg';
+export const filter = '/images/filter.svg';
+export const filterFilled = '/images/filterFilled.svg';
+export const bell = '/images/bell.png';
+export const chats = '/images/chats.png';
+export const logoUrl = '/images/g10.svg';
+export const history = '/images/history.png';
+export const loginLogo = '/images/loginLogo.png';
+export const requests = '/images/requests.png';
+export const smallLogo = '/images/smallLogo.svg';
+export const statistics = '/images/statistics.png';
+export const suppliers = '/images/suppliers.png';
+export const users = '/images/users.png';
+export const needle = '/images/needle.png';
+export const search = '/images/search.svg';
+export const dropDown = '/images/dropDown.svg';
+export const selection = '/images/selection.svg';
+export const clipWithFolder = '/images/clipWithFolder.svg';
+export const columns = [
+    { key: 'Id', label: 'ID', sortable: true },
+    { key: 'UpperPressure', label: 'Upper Pressure', sortable: true },
+    { key: 'LowerPressure', label: 'Lower Pressure', sortable: true },
+    { key: 'Heartbeat', label: 'Heartbeat', sortable: true },
+    { key: 'MeasureDate', label: 'Date', sortable: true },
+    { key: 'Smoking', label: 'Smoking', sortable: false },
+    { key: 'Alcohol', label: 'Alcohol', sortable: false },
+    { key: 'Sport', label: 'Sport', sortable: false },
+    { key: 'Stretching', label: 'Stretching', sortable: false },
+    { key: 'PressureState', label: 'Status', sortable: false },
+    { key: 'Description', label: 'Description', sortable: false },
+];

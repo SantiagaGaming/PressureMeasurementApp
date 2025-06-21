@@ -8,7 +8,7 @@ interface ImageProps {
 const Image = ({ name, width, height, onClick }: ImageProps) => {
     return (
         <img
-            src={`/public/${name}`}
+            src={name}
             width={width}
             height={height}
             onClick={onClick}

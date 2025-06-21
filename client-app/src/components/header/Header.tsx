@@ -1,4 +1,4 @@
-import styles from './PageHeader.module.css';
+import styles from './Header.module.css';
 import Image from '../ui/image/Image';
 import { bell, smallLogo } from '@/utils/constants';
 import IconButton from '../ui/buttons/iconButton/IconButton';
