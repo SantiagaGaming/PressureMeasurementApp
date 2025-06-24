@@ -37,13 +37,15 @@ namespace PressureMeasurementApp.API.Infrastructure.Repositories
 
         public async Task<PressureMeasurement?> GetEntityAsync(int id)
         {
-            return await _dbContext.PressureMeasurements.FindAsync(id);
+            return await _dbContext.PressureMeasurements
+         .Include(p => p.PressureState)
+         .FirstOrDefaultAsync(p => p.Id == id);
         }
 
         public async Task<IEnumerable<PressureMeasurement>> GetAllWithDatesAsync(DateTime from, DateTime till)
         {
             return await _dbContext.PressureMeasurements
-                .Where(p => p.MeasureDate >= from && p.MeasureDate <= till)
+                .Where(p => p.MeasureDate >= from && p.MeasureDate <= till).Include(p => p.PressureState)
                 .ToListAsync();
         }
 
@@ -67,9 +69,10 @@ namespace PressureMeasurementApp.API.Infrastructure.Repositories
         public async Task<IEnumerable<PressureMeasurement>> GetLatestAsync(int count)
         {
             return await _dbContext.PressureMeasurements
-                .OrderByDescending(p => p.MeasureDate)
-                .Take(count)
-                .ToListAsync();
+          .Include(p => p.PressureState)
+          .OrderByDescending(p => p.MeasureDate)
+          .Take(count)
+          .ToListAsync();
         }
         protected virtual void Dispose(bool disposing)
         {

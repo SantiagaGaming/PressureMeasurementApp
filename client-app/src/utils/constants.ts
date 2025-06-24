@@ -22,15 +22,15 @@ export const dropDown = '/images/dropDown.svg';
 export const selection = '/images/selection.svg';
 export const clipWithFolder = '/images/clipWithFolder.svg';
 export const columns = [
-    { key: 'Id', label: 'ID', sortable: true },
-    { key: 'UpperPressure', label: 'Upper Pressure', sortable: true },
-    { key: 'LowerPressure', label: 'Lower Pressure', sortable: true },
-    { key: 'Heartbeat', label: 'Heartbeat', sortable: true },
-    { key: 'MeasureDate', label: 'Date', sortable: true },
-    { key: 'Smoking', label: 'Smoking', sortable: false },
-    { key: 'Alcohol', label: 'Alcohol', sortable: false },
-    { key: 'Sport', label: 'Sport', sortable: false },
-    { key: 'Stretching', label: 'Stretching', sortable: false },
-    { key: 'PressureState', label: 'Status', sortable: false },
-    { key: 'Description', label: 'Description', sortable: false },
+    { key: 'id', label: 'ID', sortable: true },
+    { key: 'upperPressure', label: 'Upper', sortable: true },
+    { key: 'lowerPressure', label: 'Lower', sortable: true },
+    { key: 'heartbeat', label: 'Heartbeat', sortable: true },
+    { key: 'measureDate', label: 'Date', sortable: true },
+    { key: 'smoking', label: 'Smoking', sortable: false },
+    { key: 'alcohol', label: 'Alcohol', sortable: false },
+    { key: 'sport', label: 'Sport', sortable: false },
+    { key: 'stretching', label: 'Stretching', sortable: false },
+    { key: 'pressureState', label: 'Status', sortable: false },
+    { key: 'description', label: 'Description', sortable: false },
 ];

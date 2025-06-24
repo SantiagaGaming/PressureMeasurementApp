@@ -14,6 +14,7 @@
     border-radius: 12px;
     border: var(--Components-Button-Global-lineWidth, 1px) solid #696cff;
     background: #fff;
+    cursor: pointer;
 }
 .button:active {
     border-radius: 12px;

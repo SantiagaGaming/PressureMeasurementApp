@@ -6,14 +6,14 @@ import * as constants from '@/utils/constants';
 import NavBarButton from '../ui/buttons/navBarButton/NavBarButton';
 import { usePathname } from 'next/navigation';
 
-interface NavBarProps {
+interface Props {
     onToggle?: (expanded: boolean) => void;
     baseUrl?: string;
 }
 
 type NavLink = 'measurements' | 'about';
 
-const NavBar = ({ onToggle, baseUrl = '' }: NavBarProps) => {
+const NavBar = ({ onToggle, baseUrl = '' }: Props) => {
     const [expanded, setExpanded] = useState(false);
     const [activeLink, setActiveLink] = useState<NavLink>('measurements');
     const pathname = usePathname();
@@ -24,6 +24,7 @@ const NavBar = ({ onToggle, baseUrl = '' }: NavBarProps) => {
         } else if (pathname?.includes('about')) {
             setActiveLink('about');
         }
+        else setActiveLink('measurements');
     }, [pathname]);
 
     const toggleExpand = () => {

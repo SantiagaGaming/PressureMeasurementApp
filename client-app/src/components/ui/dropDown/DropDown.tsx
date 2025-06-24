@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import styles from './DropDown.module.css';
 import Text from '../text/Text';
-import Image from '../image/Image';
 import { dropDown } from '@/utils/constants';
+import Image from 'next/image';
 
 type DropDownValue = string;
 
@@ -91,7 +91,7 @@ const DropDown = ({
                     )}
                 </div>
                 <div className={`${styles.arrow} ${isOpen ? styles.open : ''}`}>
-                    <Image width={16} height={16} imgName={dropDown} />
+                    <Image width={16} height={16} src={dropDown} alt="drop Down"/>
                 </div>
             </div>
             {isOpen && !readonly && (

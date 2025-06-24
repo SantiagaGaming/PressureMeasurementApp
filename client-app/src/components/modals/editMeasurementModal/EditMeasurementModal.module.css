@@ -1,0 +1,129 @@
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal {
+    display: flex;
+    width: 800px;
+    max-height: 90vh;
+    padding: 24px 32px 32px 32px;
+    flex-direction: column;
+    gap: 24px;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 
+        0px 0px 12px 0px rgba(0, 0, 0, 0.08),
+        0px 9px 28px 8px rgba(0, 0, 0, 0.05);
+    overflow-y: auto;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.headerText {
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 36px;
+}
+
+.close {
+    cursor: pointer;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.pressureGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.pressureCard {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.inputGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.inputGroup label {
+    font-size: 14px;
+    color: #555;
+}
+
+.inputGroup input,
+.inputGroup textarea {
+    padding: 8px 12px;
+    border: 1px solid #d0d5dd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.inputGroup textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.checkboxGroup {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.checkboxGroup {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  padding-top: 10px;
+}
+
+.checkboxContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.checkboxContainer label {
+  margin-right: 10px;
+  font-size: 14px;
+  cursor: pointer;
+}
+.buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.button {
+    width: 120px;
+}

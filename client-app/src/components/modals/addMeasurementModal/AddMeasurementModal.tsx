@@ -1,62 +1,240 @@
 import React, { useState } from 'react';
-
-import { PressureDto, LifestyleDto } from '@/types/types';
+import styles from './AddMeasurementModal.module.css';
+import {
+    PressureDto,
+    LifestyleDto,
+    CreateMeasurementRequest,
+} from '@/shared/types/pressureMeasurements.types';
+import TextButton from '@/components/ui/buttons/textButton/TextButton';
+import Image from 'next/image';
+import { close } from '@/utils/constants';
+import Checkbox from '@/components/ui/inputs/checkBox/CheckBox';
 
 interface AddMeasurementModalProps {
-  open: boolean;
-  onClose: () => void;
-  onSubmit: (data: { Pressures: PressureDto[]; Lifestyle: LifestyleDto }) => Promise<boolean>;
+    open: boolean;
+    onClose: () => void;
+    onSubmit: (measurement: CreateMeasurementRequest) => void;
 }
 
-const AddMeasurementModal= ({ open, onClose, onSubmit }:AddMeasurementModalProps) => {
-  const [pressures, setPressures] = useState<PressureDto[]>([
-    { UpperPressure: 0, LowerPressure: 0, Heartbeat: 0 },
-    { UpperPressure: 0, LowerPressure: 0, Heartbeat: 0 },
-    { UpperPressure: 0, LowerPressure: 0, Heartbeat: 0 },
-    { UpperPressure: 0, LowerPressure: 0, Heartbeat: 0 },
-  ]);
+const AddMeasurementModal = ({
+    open,
+    onClose,
+    onSubmit,
+}: AddMeasurementModalProps) => {
+    const [pressures, setPressures] = useState<PressureDto[]>([
+        { upperPressure: 0, lowerPressure: 0, heartbeat: 0 },
+        { upperPressure: 0, lowerPressure: 0, heartbeat: 0 },
+        { upperPressure: 0, lowerPressure: 0, heartbeat: 0 },
+        { upperPressure: 0, lowerPressure: 0, heartbeat: 0 },
+    ]);
 
-  const [lifestyle, setLifestyle] = useState<LifestyleDto>({
-    Description: '',
-    Smoking: false,
-    Alcohol: false,
-    Sport: false,
-    Stretching: false,
-  });
+    const [lifestyle, setLifestyle] = useState<LifestyleDto>({
+        description: '',
+        smoking: false,
+        alcohol: false,
+        sport: false,
+        stretching: false,
+    });
 
-  const handlePressureChange = (index: number, field: keyof PressureDto, value: number) => {
-    const newPressures = [...pressures];
-    newPressures[index] = { ...newPressures[index], [field]: value };
-    setPressures(newPressures);
-  };
+    const handlePressureChange = (
+        index: number,
+        field: keyof PressureDto,
+        value: number
+    ) => {
+        const newPressures = [...pressures];
+        newPressures[index] = { ...newPressures[index], [field]: value };
+        setPressures(newPressures);
+    };
 
-  const handleLifestyleChange = (field: keyof LifestyleDto, value: any) => {
-    setLifestyle({ ...lifestyle, [field]: value });
-  };
+    const handleLifestyleChange = <K extends keyof LifestyleDto>(
+        field: K,
+        value: LifestyleDto[K]
+    ) => {
+        setLifestyle({ ...lifestyle, [field]: value });
+    };
+    const handleSubmit = async () => {
+        const success = await onSubmit({
+            pressures: pressures,
+            lifestyle: lifestyle,
+        });
 
-  const handleSubmit = async () => {
-    const success = await onSubmit({ Pressures: pressures, Lifestyle: lifestyle });
-    if (success) {
-      onClose();
-      setPressures([
-        { UpperPressure: 0, LowerPressure: 0, Heartbeat: 0 },
-        { UpperPressure: 0, LowerPressure: 0, Heartbeat: 0 },
-        { UpperPressure: 0, LowerPressure: 0, Heartbeat: 0 },
-        { UpperPressure: 0, LowerPressure: 0, Heartbeat: 0 },
-      ]);
-      setLifestyle({
-        Description: '',
-        Smoking: false,
-        Alcohol: false,
-        Sport: false,
-        Stretching: false,
-      });
-    }
-  };
+        if (success) {
+            onClose();
+            setPressures([
+                { upperPressure: 0, lowerPressure: 0, heartbeat: 0 },
+                { upperPressure: 0, lowerPressure: 0, heartbeat: 0 },
+                { upperPressure: 0, lowerPressure: 0, heartbeat: 0 },
+                { upperPressure: 0, lowerPressure: 0, heartbeat: 0 },
+            ]);
+            setLifestyle({
+                description: '',
+                smoking: false,
+                alcohol: false,
+                sport: false,
+                stretching: false,
+            });
+        }
+    };
+    if (!open) return null;
 
-  return (
-   <></>
-  );
+    return (
+        <div className={styles.modalOverlay}>
+            <div className={styles.modal}>
+                <div className={styles.header}>
+                    <div className={styles.headerText}>
+                        Add new pressure measurement
+                    </div>
+                    <div className={styles.close}>
+                        <Image
+                            src={close}
+                            onClick={onClose}
+                            width={24}
+                            height={24}
+                            alt="cross"
+                        />
+                    </div>
+                </div>
+
+                <div className={styles.content}>
+                    <div className={styles.section}>
+                        <div className={styles.pressureGrid}>
+                            {pressures.map((pressure, index) => (
+                                <div
+                                    key={index}
+                                    className={styles.pressureCard}
+                                >
+                                    <h4>Measurement {index + 1}</h4>
+                                    <div className={styles.inputGroup}>
+                                        <label>Upper pressure:</label>
+                                        <input
+                                            type="number"
+                                            value={pressure.upperPressure}
+                                            onChange={(e) =>
+                                                handlePressureChange(
+                                                    index,
+                                                    'upperPressure',
+                                                    parseInt(e.target.value) ||
+                                                        0
+                                                )
+                                            }
+                                        />
+                                    </div>
+                                    <div className={styles.inputGroup}>
+                                        <label>Lower pressure:</label>
+                                        <input
+                                            type="number"
+                                            value={pressure.lowerPressure}
+                                            onChange={(e) =>
+                                                handlePressureChange(
+                                                    index,
+                                                    'lowerPressure',
+                                                    parseInt(e.target.value) ||
+                                                        0
+                                                )
+                                            }
+                                        />
+                                    </div>
+                                    <div className={styles.inputGroup}>
+                                        <label>Heartbeat:</label>
+                                        <input
+                                            type="number"
+                                            value={pressure.heartbeat}
+                                            onChange={(e) =>
+                                                handlePressureChange(
+                                                    index,
+                                                    'heartbeat',
+                                                    parseInt(e.target.value) ||
+                                                        0
+                                                )
+                                            }
+                                        />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className={styles.section}>
+                        <h3 className={styles.sectionTitle}>Lifestyle</h3>
+                        <div className={styles.lifestyleForm}>
+                            <div className={styles.inputGroup}>
+                                <label>Description:</label>
+                                <textarea
+                                    value={lifestyle.description}
+                                    onChange={(e) =>
+                                        handleLifestyleChange(
+                                            'description',
+                                            e.target.value
+                                        )
+                                    }
+                                />
+                            </div>
+                            <div className={styles.checkboxGroup}>
+                                {[
+                                    {
+                                        field: 'smoking',
+                                        label: 'Smoking',
+                                        id: 'smoking-checkbox',
+                                    },
+                                    {
+                                        field: 'alcohol',
+                                        label: 'Alcohol',
+                                        id: 'alcohol-checkbox',
+                                    },
+                                    {
+                                        field: 'sport',
+                                        label: 'Sport',
+                                        id: 'sport-checkbox',
+                                    },
+                                    {
+                                        field: 'stretching',
+                                        label: 'Stretching',
+                                        id: 'stretching-checkbox',
+                                    },
+                                ].map((item) => (
+                                    <div
+                                        key={item.field}
+                                        className={styles.checkboxContainer}
+                                    >
+                                        <label htmlFor={item.id}>
+                                            {item.label}
+                                        </label>
+                                        <Checkbox
+                                            id={item.id}
+                                            name={item.field}
+                                            checked={
+                                                lifestyle[
+                                                    item.field as keyof LifestyleDto
+                                                ] as boolean
+                                            }
+                                            onChange={(e) =>
+                                                handleLifestyleChange(
+                                                    item.field as keyof LifestyleDto,
+                                                    e.target.checked
+                                                )
+                                            }
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className={styles.buttons}>
+                    <div className={styles.button}>
+                        <TextButton
+                            text="Отменить"
+                            variant="light"
+                            onClick={onClose}
+                        />
+                    </div>
+                    <div className={styles.button}>
+                        <TextButton text="Сохранить" onClick={handleSubmit} />
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
 };
-
 export default AddMeasurementModal;

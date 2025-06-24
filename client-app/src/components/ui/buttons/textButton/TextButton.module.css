@@ -7,6 +7,9 @@
     border-radius: 12px;
     width: 100%;
 }
+.button:hover{
+    cursor: pointer;
+}
 .imgLight {
     width: 16;
     height: 16;

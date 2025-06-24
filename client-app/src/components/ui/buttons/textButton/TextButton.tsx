@@ -1,7 +1,7 @@
 import styles from './TextButton.module.css';
 
 interface TextButtonProps {
-    onClick: () => void;
+    onClick?: () => void;
     text: string;
     icon?: string;
     variant?: string;

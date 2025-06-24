@@ -10,7 +10,7 @@ namespace PressureMeasurementApp.API.Interfaces
         Task<PressureMeasurement> GetMeasurementAsync(int id);
         Task<PressureMeasurement> CreateMeasurementAsync(
             List<PressureDto> pressures, LifestyleDto lifestyle);
-        Task UpdateMeasurementAsync(int id, UpdateMeasurementRequest request);
+        Task UpdateMeasurementAsync(int id, PressureMeasurement request);
         Task DeleteMeasurementAsync(int id);
     }
 }

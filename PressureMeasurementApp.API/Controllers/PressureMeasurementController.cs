@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using PressureMeasurementApp.API.Data.Dto;
+using PressureMeasurementApp.API.Data.Entitites;
 using PressureMeasurementApp.API.Interfaces;
 
 namespace PressureMeasurementApp.API.Controllers
@@ -58,7 +59,7 @@ namespace PressureMeasurementApp.API.Controllers
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id,
-            [FromBody] UpdateMeasurementRequest request)
+            [FromBody] PressureMeasurement request)
         {
             try
             {
