@@ -9,11 +9,12 @@ import TextButton from '@/components/ui/buttons/textButton/TextButton';
 import Image from 'next/image';
 import { close } from '@/utils/constants';
 import Checkbox from '@/components/ui/inputs/checkBox/CheckBox';
+import { toast } from 'react-toastify';
 
 interface AddMeasurementModalProps {
     open: boolean;
     onClose: () => void;
-    onSubmit: (measurement: CreateMeasurementRequest) => void;
+    onSubmit: (measurement: CreateMeasurementRequest) => Promise<boolean>;
 }
 
 const AddMeasurementModal = ({
@@ -52,27 +53,49 @@ const AddMeasurementModal = ({
     ) => {
         setLifestyle({ ...lifestyle, [field]: value });
     };
-    const handleSubmit = async () => {
-        const success = await onSubmit({
-            pressures: pressures,
-            lifestyle: lifestyle,
-        });
 
-        if (success) {
-            onClose();
-            setPressures([
-                { upperPressure: 0, lowerPressure: 0, heartbeat: 0 },
-                { upperPressure: 0, lowerPressure: 0, heartbeat: 0 },
-                { upperPressure: 0, lowerPressure: 0, heartbeat: 0 },
-                { upperPressure: 0, lowerPressure: 0, heartbeat: 0 },
-            ]);
-            setLifestyle({
-                description: '',
-                smoking: false,
-                alcohol: false,
-                sport: false,
-                stretching: false,
+    const validateForm = (): boolean => {
+        // Проверяем все измерения давления
+        for (const pressure of pressures) {
+            if (pressure.upperPressure <= 0 || 
+                pressure.lowerPressure <= 0 || 
+                pressure.heartbeat <= 0) {
+                return false;
+            }
+        }
+        return true;
+    };
+
+    const handleSubmit = async () => {
+        if (!validateForm()) {
+            toast.error("All fields must be filled with valid values!");
+            return;
+        }
+
+        try {
+            const success = await onSubmit({
+                pressures: pressures,
+                lifestyle: lifestyle,
             });
+
+            if (success) {
+                onClose();
+                setPressures([
+                    { upperPressure: 0, lowerPressure: 0, heartbeat: 0 },
+                    { upperPressure: 0, lowerPressure: 0, heartbeat: 0 },
+                    { upperPressure: 0, lowerPressure: 0, heartbeat: 0 },
+                    { upperPressure: 0, lowerPressure: 0, heartbeat: 0 },
+                ]);
+                setLifestyle({
+                    description: '',
+                    smoking: false,
+                    alcohol: false,
+                    sport: false,
+                    stretching: false,
+                });
+            }
+        } catch (error) {
+            toast.error("Failed to save measurement");
         }
     };
     if (!open) return null;

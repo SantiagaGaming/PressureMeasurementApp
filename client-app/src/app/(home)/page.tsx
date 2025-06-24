@@ -4,17 +4,16 @@ import { PressureMeasurementService } from '@/api/api';
 import {
     CreateMeasurementRequest,
     PressureMeasurementDto,
-
 } from '@/shared/types/pressureMeasurements.types';
 import Index from './Index';
+import { toast } from 'react-toastify';
 
 const PressureMeasurementPage = () => {
-    const [measurements, setMeasurements] = useState<
-        PressureMeasurementDto[]
-    >([]);
-        const [measurement, setMeasurement] = useState<
-     PressureMeasurementDto|null
-    >(null);
+    const [measurements, setMeasurements] = useState<PressureMeasurementDto[]>(
+        []
+    );
+    const [measurement, setMeasurement] =
+        useState<PressureMeasurementDto | null>(null);
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
@@ -32,7 +31,7 @@ const PressureMeasurementPage = () => {
             setMeasurements(response);
             setMeasurement(null);
         } catch (error) {
-            console.error('Error loading measurements:', error);
+            toast.error(error);
         } finally {
             setLoading(false);
         }
@@ -58,8 +57,9 @@ const PressureMeasurementPage = () => {
             const response =
                 await PressureMeasurementService.create(measurement);
             setMeasurements((prev) => [response, ...prev]);
+            toast.success('New measurement added!');
         } catch (error) {
-            console.error('Error loading measurements:', error);
+            toast.error(error);
         } finally {
             setLoading(false);
         }
@@ -71,8 +71,9 @@ const PressureMeasurementPage = () => {
             setMeasurements((prev) =>
                 prev.filter((measurement) => measurement.id !== id)
             );
+            toast.success('Measurement deleted!');
         } catch (error) {
-            console.error('Error deleting measurement:', error);
+            toast.error(`Error deleting measurement: ${error}`);
         } finally {
             setLoading(false);
         }
@@ -81,9 +82,9 @@ const PressureMeasurementPage = () => {
         try {
             setLoading(true);
             const result = await PressureMeasurementService.getById(id);
-          setMeasurement(result);
+            setMeasurement(result);
         } catch (error) {
-            console.error('Error deleting measurement:', error);
+            toast.error(`Error: ${error}`);
         } finally {
             setLoading(false);
         }
@@ -96,9 +97,9 @@ const PressureMeasurementPage = () => {
             setLoading(true);
             const result = await PressureMeasurementService.update(id, data);
             await loadMeasurements();
-            console.log(result);
+            toast.success('Measurement updated!');
         } catch (error) {
-            console.error('Error deleting measurement:', error);
+            toast.error(`Error: ${error}`);
         } finally {
             setLoading(false);
         }

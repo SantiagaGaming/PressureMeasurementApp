@@ -4,18 +4,14 @@ import TextButton from '@/components/ui/buttons/textButton/TextButton';
 import Image from 'next/image';
 import { close } from '@/utils/constants';
 import Checkbox from '@/components/ui/inputs/checkBox/CheckBox';
-import {
-    PressureMeasurementDto,
-} from '@/shared/types/pressureMeasurements.types';
+import { PressureMeasurementDto } from '@/shared/types/pressureMeasurements.types';
+import { toast } from 'react-toastify';
 
 interface EditMeasurementModalProps {
     open: boolean;
     onClose: () => void;
-    measurement?: PressureMeasurementDto | null|undefined;
-    onSubmit: (
-        id: number,
-        data: PressureMeasurementDto
-    ) => void;
+    measurement?: PressureMeasurementDto | null | undefined;
+    onSubmit: (id: number, data: PressureMeasurementDto) => void;
 }
 
 const EditMeasurementModal = ({
@@ -51,13 +47,30 @@ const EditMeasurementModal = ({
     };
 
     const handleSubmit = async () => {
+        if (!validateForm()) {
+            toast.error('All fields must be filled with valid values!');
+            return;
+        }
         if (measurement) {
             const success = await onSubmit(measurement.id, editedMeasurement);
+            if (success) {
                 onClose();
+            }
         }
     };
+    const validateForm = (): boolean => {
+        if (
+            editedMeasurement.upperPressure <= 0 ||
+            editedMeasurement.lowerPressure <= 0 ||
+            editedMeasurement.heartbeat <= 0
+        ) {
+            return false;
+        }
 
-    if (!open ) return null;
+        return true;
+    };
+
+    if (!open) return null;
 
     return (
         <div className={styles.modalOverlay}>
@@ -196,10 +209,7 @@ const EditMeasurementModal = ({
                         />
                     </div>
                     <div className={styles.button}>
-                        <TextButton
-                            text="Save"
-                            onClick={handleSubmit}
-                        />
+                        <TextButton text="Save" onClick={handleSubmit} />
                     </div>
                 </div>
             </div>
