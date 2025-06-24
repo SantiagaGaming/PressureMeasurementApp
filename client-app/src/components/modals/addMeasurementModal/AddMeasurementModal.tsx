@@ -247,13 +247,13 @@ const AddMeasurementModal = ({
                 <div className={styles.buttons}>
                     <div className={styles.button}>
                         <TextButton
-                            text="Отменить"
+                            text="Cancel"
                             variant="light"
                             onClick={onClose}
                         />
                     </div>
                     <div className={styles.button}>
-                        <TextButton text="Сохранить" onClick={handleSubmit} />
+                        <TextButton text="Add" onClick={handleSubmit} />
                     </div>
                 </div>
             </div>

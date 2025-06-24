@@ -59,7 +59,7 @@ const NavBar = ({ onToggle, baseUrl = '' }: Props) => {
         
             />
             <NavBarButton
-                logoName={constants.suppliers}
+                logoName={constants.users}
                 title="About"
                 expanded={expanded}
                 enabled={activeLink === 'about'}

@@ -20,8 +20,8 @@ const Header = () => {
             <div className={styles.header}>
                 <Image
                     src={smallLogo}
-                    width={38}
-                    height={32}
+                    width={40}
+                    height={40}
                     alt="Header logo"
                 />
 

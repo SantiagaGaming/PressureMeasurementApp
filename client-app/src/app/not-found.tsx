@@ -1,8 +1,9 @@
+'use client'
 import TextButton from '@/components/ui/buttons/textButton/TextButton';
 
 const NotFound = () => {
     const handleRedirect = () => {
-        window.location.href = '/';
+        window.location.href = '/index';
     };
     return (
         <>
