@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { PressureMeasurementService } from '@/api/api';
+import { FileService, PressureMeasurementService } from '@/api/api';
 import {
     CreateMeasurementRequest,
     PressureMeasurementDto,
@@ -8,7 +8,7 @@ import {
 import Index from './Index';
 import { toast } from 'react-toastify';
 
-const PressureMeasurementPage = () => {
+const IndexPage = () => {
     const [measurements, setMeasurements] = useState<PressureMeasurementDto[]>(
         []
     );
@@ -104,6 +104,50 @@ const PressureMeasurementPage = () => {
             setLoading(false);
         }
     };
+    const handleGetMeasurementsWithDates = async (
+        from: Date | null,
+        till: Date | null
+    ) => {
+        if (from == null || till == null) {
+            toast.error('Dates must be filled!');
+            return;
+        }
+        try {
+            setLoading(true);
+            const response = await PressureMeasurementService.getAllWithDates(
+                from,
+                till
+            );
+            setMeasurements(response);
+            toast.success('Measurement uploaded!');
+        } catch (error) {
+            toast.error(`Error: ${error}`);
+        } finally {
+            setLoading(false);
+        }
+    };
+    const handleExport = async (from: Date | null, till: Date | null) => {
+        try {
+            setLoading(true);
+            let blob: Blob;
+            let fileName: string;
+
+            if (from && till) {
+                blob = await FileService.getXlsxWithDates(from, till);
+                fileName = `report.xlsx`;
+            } else {
+                blob = await FileService.getXlsxLatest();
+                fileName = 'latest_report.xlsx';
+            }
+
+            FileService.downloadFile(blob, fileName);
+            toast.success('Report downloaded successfully!');
+        } catch (error) {
+            toast.error(`Error downloading report: ${error}`);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <Index
@@ -118,8 +162,10 @@ const PressureMeasurementPage = () => {
             onGet={handleGetMeasuremenById}
             onUpdate={handleUpdateMeasurement}
             measurement={measurement}
+            onGetWithDates={handleGetMeasurementsWithDates}
+            onExport={handleExport}
         />
     );
 };
 
-export default PressureMeasurementPage;
+export default IndexPage;

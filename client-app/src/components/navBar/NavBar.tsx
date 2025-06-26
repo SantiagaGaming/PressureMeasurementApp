@@ -5,6 +5,7 @@ import IconButton from '../ui/buttons/iconButton/IconButton';
 import * as constants from '@/utils/constants';
 import NavBarButton from '../ui/buttons/navBarButton/NavBarButton';
 import { usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation'; 
 
 interface Props {
     onToggle?: (expanded: boolean) => void;
@@ -17,14 +18,16 @@ const NavBar = ({ onToggle, baseUrl = '' }: Props) => {
     const [expanded, setExpanded] = useState(false);
     const [activeLink, setActiveLink] = useState<NavLink>('measurements');
     const pathname = usePathname();
+    const router = useRouter(); 
 
     useEffect(() => {
         if (pathname?.includes('measurements')) {
             setActiveLink('measurements');
         } else if (pathname?.includes('about')) {
             setActiveLink('about');
+        } else {
+            setActiveLink('measurements');
         }
-        else setActiveLink('measurements');
     }, [pathname]);
 
     const toggleExpand = () => {
@@ -37,6 +40,12 @@ const NavBar = ({ onToggle, baseUrl = '' }: Props) => {
 
     const handleClick = (link: NavLink) => {
         setActiveLink(link);
+        // Перенаправляем при клике на кнопку
+        if (link === 'measurements') {
+            router.push('/index');
+        } else if (link === 'about') {
+            router.push('/about');
+        }
     };
 
     return (
@@ -56,7 +65,6 @@ const NavBar = ({ onToggle, baseUrl = '' }: Props) => {
                 expanded={expanded}
                 enabled={activeLink === 'measurements'}
                 onClick={() => handleClick('measurements')}
-        
             />
             <NavBarButton
                 logoName={constants.users}
@@ -64,7 +72,6 @@ const NavBar = ({ onToggle, baseUrl = '' }: Props) => {
                 expanded={expanded}
                 enabled={activeLink === 'about'}
                 onClick={() => handleClick('about')}
-     
             />
         </div>
     );

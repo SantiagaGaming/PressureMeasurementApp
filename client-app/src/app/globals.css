@@ -24,31 +24,32 @@ body {
     background-color: #eeeeff;
 }
 
-.appLayout {
+.app-layout {
     display: flex;
 }
 
-.navBarLeft {
+.nav-bar-left {
     display: flex;
     flex-direction: column;
     overflow: visible;
+    padding: 20 0 0 0;
 }
-.rightContent {
+.right-content {
     flex: 1;
     padding: 20 0 20 20;
     transition: margin-left 0.3s ease;
     min-width: 0;
+    width: 96%;
 }
-.navBarLeft {
-    display: flex;
-    flex-direction: column;
-    margin: 20 0 0 0;
-    overflow: visible;
-}
-.addButton {
+
+.add-button {
     display: flex;
     justify-content: flex-end;
     gap: 10px;
     padding: 0 0 10 0;
     margin: 0 0 10 0;
+    height: 6%;
+}
+.about{
+    padding: 20;
 }

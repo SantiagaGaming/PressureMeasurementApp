@@ -1,0 +1,51 @@
+.wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 3px 12px;
+    gap: 10px;
+    border-radius: 12px;
+    border: 1px solid #d0d5e3;
+    background: #fff;
+    cursor: pointer;
+    width: 100%;
+    min-width: 180px;
+}
+
+.wrapper:focus-within {
+    border: 1px solid var(--Accent-500, #696cff);
+    outline: none;
+}
+
+.wrapper.disabled {
+    cursor: default !important;
+    pointer-events: none;
+}
+
+.input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    color: #000;
+    font-size: 16.5px;
+    font-weight: 400;
+    line-height: 22px;
+    cursor: pointer;
+    width: 100%;
+}
+
+.input.disabledInput {
+    cursor: default !important;
+}
+
+.hidden {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    opacity: 0;
+    z-index: 1;
+    cursor: pointer;
+    border: none;
+}

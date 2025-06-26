@@ -10,6 +10,7 @@ import TextButton from '@/components/ui/buttons/textButton/TextButton';
 import AddMeasurementModal from '@/components/modals/addMeasurementModal/AddMeasurementModal';
 import ChoiseModal from '@/components/modals/choiceModal/ChoiseModal';
 import EditMeasurementModal from '@/components/modals/editMeasurementModal/EditMeasurementModal';
+import CalendarInput from '@/components/ui/inputs/calendarInput/CalendarInput';
 
 interface PressureMeasurementViewProps {
     measurements: PressureMeasurementDto[];
@@ -22,7 +23,9 @@ interface PressureMeasurementViewProps {
     onDelete: (id: number) => void;
     onGet: (id: number) => void;
     onUpdate: (id: number, data: PressureMeasurementDto) => void;
-    measurement?:PressureMeasurementDto|null|undefined;
+    measurement?: PressureMeasurementDto | null | undefined;
+    onGetWithDates?: (from: Date | null, till: Date | null) => void;
+    onExport?: (from: Date | null, till: Date | null) => void;
 }
 
 const Index = ({
@@ -35,14 +38,18 @@ const Index = ({
     onAdd,
     onDelete,
     onGet,
+    onGetWithDates,
     onUpdate,
-    measurement
+    measurement,
+    onExport,
 }: PressureMeasurementViewProps) => {
     const [navExpanded, setNavExpanded] = useState(false);
     const [addModal, setAddModal] = useState(false);
     const [editModal, setEditModal] = useState(false);
     const [deleteModal, setDeleteModal] = useState(false);
     const [orderToDeleteId, setOrderToDeleteId] = useState<number>(-1);
+    const [fromDate, setFromDate] = useState<Date | null>(null);
+    const [tillDate, setTillDate] = useState<Date | null>(null);
     const handleCloseAddModal = () => {
         setAddModal(false);
     };
@@ -64,55 +71,77 @@ const Index = ({
         onGet(id);
         setEditModal(true);
     };
+    const handleGetMeasurementsWithDates = () => {
+        onGetWithDates(fromDate, tillDate);
+    };
+    const handleExportMeasurements = () => {
+        onExport(fromDate, tillDate);
+    };
+    const handleClearDates = () => {
+        setFromDate(null);
+        setTillDate(null);
+    };
     return (
         <>
-            <div className="appLayout">
-                <div
-                    className="navBarLeft"
-                    style={{
-                        width: navExpanded ? '230px' : '50px',
-                        transition: 'width 0.3s ease',
-                    }}
-                >
-                    <NavBar onToggle={setNavExpanded} />
-                </div>
-                <div className="rightContent">
-                    <div className="addButton">
-                        <TextButton
-                            text="Add new measurement"
-                            onClick={handleOpenAddModal}
-                        />
-                    </div>
-                    <PressureTable
-                        measurements={measurements}
-                        loading={loading}
-                        currentPage={currentPage}
-                        totalPages={totalPages}
-                        onPageChange={onPageChange}
-                        onSort={onSort}
-                        onSetDeleteId={handleOpenDeleteModal}
-                        onSetId={handleOpenEditModal}
+            <div className="right-content ">
+                <div className="add-button">
+                    <CalendarInput
+                        placeholder="Choose date from"
+                        onChange={setFromDate}
+                        value={fromDate?.toDateString()}
                     />
+                    <CalendarInput
+                        placeholder="Choose date till"
+                        onChange={setTillDate}
+                        value={tillDate?.toDateString()}
+                    />
+                    <TextButton
+                        text="Clear "
+                        variant="light"
+                        onClick={handleClearDates}
+                    />
+                    <TextButton
+                        text="Filter "
+                        variant="light"
+                        onClick={handleGetMeasurementsWithDates}
+                    />
+                    <TextButton
+                        text="Export"
+                        variant="dark"
+                        onClick={handleExportMeasurements}
+                    />
+                    <TextButton text="Add" onClick={handleOpenAddModal} />
                 </div>
-                <AddMeasurementModal
-                    open={addModal}
-                    onClose={handleCloseAddModal}
-                    onSubmit={onAdd}
-                />
-                <ChoiseModal
-                    open={deleteModal}
-                    onClose={handleCloseDeleteModal}
-                    onSubmit={handleDelete}
-                    titleText="Delete measurement"
-                    text="Are you sure want to delete measurement?"
-                />
-                <EditMeasurementModal
-                    open={editModal}
-                    onClose={() => setEditModal(false)}
-                    onSubmit={onUpdate}
-                    measurement={measurement}
+
+                <PressureTable
+                    measurements={measurements}
+                    loading={loading}
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={onPageChange}
+                    onSort={onSort}
+                    onSetDeleteId={handleOpenDeleteModal}
+                    onSetId={handleOpenEditModal}
                 />
             </div>
+            <AddMeasurementModal
+                open={addModal}
+                onClose={handleCloseAddModal}
+                onSubmit={onAdd}
+            />
+            <ChoiseModal
+                open={deleteModal}
+                onClose={handleCloseDeleteModal}
+                onSubmit={handleDelete}
+                titleText="Delete measurement"
+                text="Are you sure want to delete measurement?"
+            />
+            <EditMeasurementModal
+                open={editModal}
+                onClose={() => setEditModal(false)}
+                onSubmit={onUpdate}
+                measurement={measurement}
+            />
         </>
     );
 };
