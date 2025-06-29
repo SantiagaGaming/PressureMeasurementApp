@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  pressure-measurement-app.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:5000
+      - DOTNET_NOLOGO=true
+      - DOTNET_CLI_TELEMETRY_OPTOUT=1
+    container_name: pressure-measurement-app.api
+    image: pressure-measurement-app.api
+    build:
+      context: PressureMeasurementApp.API/
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+      - "8080:8080"
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    extra_hosts:
+      - "host.docker.internal:${HOST_IP}"
+
+  pressure-measurement-app.client:
+    build:
+      context: client-app/
+      dockerfile: Dockerfile
+    image: pressure-measurement-app.client
+    container_name: pressure-measurement-app.client
+    ports:
+      - "3000:3000"
+    depends_on:
+      pressure-measurement-app.api:
+        condition: service_healthy
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=http://${HOST_IP}:5000
+      - NEXT_TELEMETRY_DISABLED=1
+      - PORT=3000
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    extra_hosts:
+      - "host.docker.internal:${HOST_IP}"
+
+networks:
+  app-network:
+    driver: bridge
