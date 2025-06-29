@@ -9,7 +9,7 @@ const Header = () => {
     const router = useRouter(); 
 
     const handleLogoClick = () => {
-        router.push('/index'); 
+        router.push('/'); 
     };
 
     return (

@@ -39,9 +39,8 @@ const NavBar = ({ onToggle }: Props) => {
 
     const handleClick = (link: NavLink) => {
         setActiveLink(link);
-        // Перенаправляем при клике на кнопку
         if (link === 'measurements') {
-            router.push('/index');
+            router.push('/');
         } else if (link === 'about') {
             router.push('/about');
         }

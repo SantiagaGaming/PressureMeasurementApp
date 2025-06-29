@@ -5,7 +5,7 @@ import {
     CreateMeasurementRequest,
     PressureMeasurementDto,
 } from '@/shared/types/pressureMeasurements.types';
-import Index from './Index';
+import Index from './index/Index';
 import { toast } from 'react-toastify';
 
 const IndexPage = () => {
