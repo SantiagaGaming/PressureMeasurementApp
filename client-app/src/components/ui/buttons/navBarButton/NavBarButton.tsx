@@ -1,13 +1,14 @@
-import { StaticImageData } from 'next/image';
+import Image, { StaticImageData } from 'next/image';
 import styles from './NavBarButton.module.css';
 
 interface NavBarButtonProps {
     onClick: () => void;
-    logoName: string| StaticImageData;
+    logoName: string | StaticImageData;
     title: string;
     expanded?: boolean;
     enabled?: boolean;
 }
+
 const NavBarButton = ({
     onClick,
     logoName,
@@ -24,10 +25,19 @@ const NavBarButton = ({
             `}
             onClick={onClick}
             title={title}
+            aria-label={title} 
         >
-            <img src={logoName} alt="" className={styles.img} />
+            <Image
+                src={logoName}
+                alt="" 
+                className={styles.img}
+                width={24}
+                height={24}
+                priority={false}
+            />
             <span className={styles.title}>{title}</span>
         </button>
     );
 };
+
 export default NavBarButton;

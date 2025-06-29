@@ -8,6 +8,7 @@ import { formatDate } from '@/utils/helpers';
 import { Pagination } from 'react-bootstrap';
 import Loader from '../loader/Loader';
 import TextButton from '../ui/buttons/textButton/TextButton';
+import Image from 'next/image';
 
 interface PressureTableProps {
     measurements: PressureMeasurementDto[];
@@ -43,12 +44,13 @@ const TableHeaderCell = ({
     >
         <span>{children}</span>
         {sortable && (
-            <img
+            <Image
                 src={arrowDown}
                 width={17}
                 height={17}
                 style={{ cursor: 'pointer', marginLeft: '4px' }}
                 alt="Sort"
+                priority={false}
             />
         )}
     </div>

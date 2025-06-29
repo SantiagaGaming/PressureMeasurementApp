@@ -1,6 +1,5 @@
 'use client';
 import { useState } from 'react';
-import NavBar from '@/components/navBar/NavBar';
 import PressureTable from '@/components/tables/PressureTable';
 import {
     CreateMeasurementRequest,
@@ -19,10 +18,10 @@ interface PressureMeasurementViewProps {
     totalPages: number;
     onPageChange: (page: number) => void;
     onSort: (sortKey: string) => void;
-    onAdd: (measurement: CreateMeasurementRequest) => void;
+    onAdd: (measurement: CreateMeasurementRequest) => Promise<boolean>;
     onDelete: (id: number) => void;
     onGet: (id: number) => void;
-    onUpdate: (id: number, data: PressureMeasurementDto) => void;
+    onUpdate: (id: number, data: PressureMeasurementDto) => Promise<boolean>;
     measurement?: PressureMeasurementDto | null | undefined;
     onGetWithDates?: (from: Date | null, till: Date | null) => void;
     onExport?: (from: Date | null, till: Date | null) => void;
@@ -43,7 +42,6 @@ const Index = ({
     measurement,
     onExport,
 }: PressureMeasurementViewProps) => {
-    const [navExpanded, setNavExpanded] = useState(false);
     const [addModal, setAddModal] = useState(false);
     const [editModal, setEditModal] = useState(false);
     const [deleteModal, setDeleteModal] = useState(false);
@@ -72,10 +70,15 @@ const Index = ({
         setEditModal(true);
     };
     const handleGetMeasurementsWithDates = () => {
-        onGetWithDates(fromDate, tillDate);
+        if (onGetWithDates) {
+            onGetWithDates(fromDate, tillDate);
+        }
     };
+
     const handleExportMeasurements = () => {
-        onExport(fromDate, tillDate);
+        if (onExport) {
+            onExport(fromDate, tillDate);
+        }
     };
     const handleClearDates = () => {
         setFromDate(null);

@@ -10,8 +10,14 @@ import { toast } from 'react-toastify';
 interface EditMeasurementModalProps {
     open: boolean;
     onClose: () => void;
-    measurement?: PressureMeasurementDto | null | undefined;
-    onSubmit: (id: number, data: PressureMeasurementDto) => void;
+    measurement?: PressureMeasurementDto | null;
+    onSubmit: (id: number, data: PressureMeasurementDto) => Promise<boolean>;
+}
+
+interface CheckboxItem {
+    field: keyof PressureMeasurementDto;
+    label: string;
+    id: string;
 }
 
 const EditMeasurementModal = ({
@@ -20,22 +26,33 @@ const EditMeasurementModal = ({
     measurement,
     onSubmit,
 }: EditMeasurementModalProps) => {
-    const [editedMeasurement, setEditedMeasurement] = useState<
-        Partial<PressureMeasurementDto>
-    >({
+    const defaultMeasurement: PressureMeasurementDto = {
+        id: 0,
         upperPressure: 0,
         lowerPressure: 0,
         heartbeat: 0,
         description: '',
+        measureDate: new Date(),
         smoking: false,
         alcohol: false,
         sport: false,
         stretching: false,
         pressureState: undefined,
-    });
+    };
+
+    const [editedMeasurement, setEditedMeasurement] = 
+        useState<PressureMeasurementDto>(defaultMeasurement);
+
+    const checkboxItems: CheckboxItem[] = [
+        { field: 'smoking', label: 'Smoking', id: 'smoking-checkbox' },
+        { field: 'alcohol', label: 'Alcohol', id: 'alcohol-checkbox' },
+        { field: 'sport', label: 'Sport', id: 'sport-checkbox' },
+        { field: 'stretching', label: 'Stretching', id: 'stretching-checkbox' },
+    ];
+
     useEffect(() => {
         if (measurement) {
-            setEditedMeasurement({ ...measurement });
+            setEditedMeasurement(measurement);
         }
     }, [measurement]);
 
@@ -43,31 +60,31 @@ const EditMeasurementModal = ({
         field: K,
         value: PressureMeasurementDto[K]
     ) => {
-        setEditedMeasurement((prev) => ({ ...prev, [field]: value }));
+        setEditedMeasurement(prev => ({ ...prev, [field]: value }));
     };
 
     const handleSubmit = async () => {
+        if (!measurement) return;
+        
         if (!validateForm()) {
             toast.error('All fields must be filled with valid values!');
             return;
         }
-        if (measurement) {
+
+        try {
             const success = await onSubmit(measurement.id, editedMeasurement);
-            if (success) {
-                onClose();
-            }
+            if (success) onClose();
+        } catch (error) {
+            toast.error(`Failed to update measurement: ${error instanceof Error ? error.message : String(error)}`);
         }
     };
-    const validateForm = (): boolean => {
-        if (
-            editedMeasurement.upperPressure <= 0 ||
-            editedMeasurement.lowerPressure <= 0 ||
-            editedMeasurement.heartbeat <= 0
-        ) {
-            return false;
-        }
 
-        return true;
+    const validateForm = (): boolean => {
+        return (
+            editedMeasurement.upperPressure > 0 &&
+            editedMeasurement.lowerPressure > 0 &&
+            editedMeasurement.heartbeat > 0
+        );
     };
 
     if (!open) return null;
@@ -78,13 +95,7 @@ const EditMeasurementModal = ({
                 <div className={styles.header}>
                     <div className={styles.headerText}>Edit Measurement</div>
                     <div className={styles.close}>
-                        <Image
-                            src={close}
-                            onClick={onClose}
-                            width={24}
-                            height={24}
-                            alt="cross"
-                        />
+                        <Image src={close} onClick={onClose} width={24} height={24} alt="Close" />
                     </div>
                 </div>
 
@@ -95,39 +106,24 @@ const EditMeasurementModal = ({
                                 <label>Upper pressure:</label>
                                 <input
                                     type="number"
-                                    value={editedMeasurement.upperPressure || 0}
-                                    onChange={(e) =>
-                                        handleChange(
-                                            'upperPressure',
-                                            parseInt(e.target.value) || 0
-                                        )
-                                    }
+                                    value={editedMeasurement.upperPressure}
+                                    onChange={(e) => handleChange('upperPressure', Number(e.target.value))}
                                 />
                             </div>
                             <div className={styles.inputGroup}>
                                 <label>Lower pressure:</label>
                                 <input
                                     type="number"
-                                    value={editedMeasurement.lowerPressure || 0}
-                                    onChange={(e) =>
-                                        handleChange(
-                                            'lowerPressure',
-                                            parseInt(e.target.value) || 0
-                                        )
-                                    }
+                                    value={editedMeasurement.lowerPressure}
+                                    onChange={(e) => handleChange('lowerPressure', Number(e.target.value))}
                                 />
                             </div>
                             <div className={styles.inputGroup}>
                                 <label>Heartbeat:</label>
                                 <input
                                     type="number"
-                                    value={editedMeasurement.heartbeat || 0}
-                                    onChange={(e) =>
-                                        handleChange(
-                                            'heartbeat',
-                                            parseInt(e.target.value) || 0
-                                        )
-                                    }
+                                    value={editedMeasurement.heartbeat}
+                                    onChange={(e) => handleChange('heartbeat', Number(e.target.value))}
                                 />
                             </div>
                         </div>
@@ -139,59 +135,19 @@ const EditMeasurementModal = ({
                             <div className={styles.inputGroup}>
                                 <label>Description:</label>
                                 <textarea
-                                    value={editedMeasurement.description || ''}
-                                    onChange={(e) =>
-                                        handleChange(
-                                            'description',
-                                            e.target.value
-                                        )
-                                    }
+                                    value={editedMeasurement.description}
+                                    onChange={(e) => handleChange('description', e.target.value)}
                                 />
                             </div>
                             <div className={styles.checkboxGroup}>
-                                {[
-                                    {
-                                        field: 'smoking',
-                                        label: 'Smoking',
-                                        id: 'smoking-checkbox',
-                                    },
-                                    {
-                                        field: 'alcohol',
-                                        label: 'Alcohol',
-                                        id: 'alcohol-checkbox',
-                                    },
-                                    {
-                                        field: 'sport',
-                                        label: 'Sport',
-                                        id: 'sport-checkbox',
-                                    },
-                                    {
-                                        field: 'stretching',
-                                        label: 'Stretching',
-                                        id: 'stretching-checkbox',
-                                    },
-                                ].map((item) => (
-                                    <div
-                                        key={item.field}
-                                        className={styles.checkboxContainer}
-                                    >
-                                        <label htmlFor={item.id}>
-                                            {item.label}
-                                        </label>
+                                {checkboxItems.map((item) => (
+                                    <div key={item.id} className={styles.checkboxContainer}>
+                                        <label htmlFor={item.id}>{item.label}</label>
                                         <Checkbox
                                             id={item.id}
                                             name={item.field}
-                                            checked={
-                                                editedMeasurement[
-                                                    item.field
-                                                ] as boolean
-                                            }
-                                            onChange={(e) =>
-                                                handleChange(
-                                                    item.field as keyof PressureMeasurementDto,
-                                                    e.target.checked
-                                                )
-                                            }
+                                            checked={editedMeasurement[item.field] as boolean}
+                                            onChange={(e) => handleChange(item.field, e.target.checked)}
                                         />
                                     </div>
                                 ))}
@@ -201,19 +157,12 @@ const EditMeasurementModal = ({
                 </div>
 
                 <div className={styles.buttons}>
-                    <div className={styles.button}>
-                        <TextButton
-                            text="Cancel"
-                            variant="light"
-                            onClick={onClose}
-                        />
-                    </div>
-                    <div className={styles.button}>
-                        <TextButton text="Save" onClick={handleSubmit} />
-                    </div>
+                    <TextButton text="Cancel" variant="light" onClick={onClose} />
+                    <TextButton text="Save" onClick={handleSubmit} />
                 </div>
             </div>
         </div>
     );
 };
+
 export default EditMeasurementModal;

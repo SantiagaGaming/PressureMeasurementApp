@@ -95,7 +95,7 @@ const AddMeasurementModal = ({
                 });
             }
         } catch (error) {
-            toast.error("Failed to save measurement");
+            toast.error(`Failed to save measurement${ error}`);
         }
     };
     if (!open) return null;

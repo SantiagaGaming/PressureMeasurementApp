@@ -30,8 +30,9 @@ const IndexPage = () => {
             const response = await PressureMeasurementService.getLatest();
             setMeasurements(response);
             setMeasurement(null);
+            setTotalPages(response.length / 10);
         } catch (error) {
-            toast.error(error);
+            toast.error(error as string);
         } finally {
             setLoading(false);
         }
@@ -51,15 +52,17 @@ const IndexPage = () => {
     };
     const handleAddMeasurement = async (
         measurement: CreateMeasurementRequest
-    ) => {
+    ): Promise<boolean> => {
         try {
             setLoading(true);
             const response =
                 await PressureMeasurementService.create(measurement);
             setMeasurements((prev) => [response, ...prev]);
             toast.success('New measurement added!');
+            return true;
         } catch (error) {
-            toast.error(error);
+            toast.error(error as string);
+            return false;
         } finally {
             setLoading(false);
         }
@@ -73,7 +76,7 @@ const IndexPage = () => {
             );
             toast.success('Measurement deleted!');
         } catch (error) {
-            toast.error(`Error deleting measurement: ${error}`);
+            toast.error(`Error deleting measurement: ${error as string}`);
         } finally {
             setLoading(false);
         }
@@ -84,7 +87,7 @@ const IndexPage = () => {
             const result = await PressureMeasurementService.getById(id);
             setMeasurement(result);
         } catch (error) {
-            toast.error(`Error: ${error}`);
+            toast.error(`Error: ${error as string}`);
         } finally {
             setLoading(false);
         }
@@ -92,14 +95,16 @@ const IndexPage = () => {
     const handleUpdateMeasurement = async (
         id: number,
         data: PressureMeasurementDto
-    ) => {
+    ): Promise<boolean> => {
         try {
             setLoading(true);
-            const result = await PressureMeasurementService.update(id, data);
+            await PressureMeasurementService.update(id, data);
             await loadMeasurements();
             toast.success('Measurement updated!');
+            return true;
         } catch (error) {
-            toast.error(`Error: ${error}`);
+            toast.error(`Error: ${error as string}`);
+            return false;
         } finally {
             setLoading(false);
         }
@@ -119,9 +124,10 @@ const IndexPage = () => {
                 till
             );
             setMeasurements(response);
+            setTotalPages(response.length / 10);
             toast.success('Measurement uploaded!');
         } catch (error) {
-            toast.error(`Error: ${error}`);
+            toast.error(`Error: ${error as string}`);
         } finally {
             setLoading(false);
         }
@@ -143,7 +149,7 @@ const IndexPage = () => {
             FileService.downloadFile(blob, fileName);
             toast.success('Report downloaded successfully!');
         } catch (error) {
-            toast.error(`Error downloading report: ${error}`);
+            toast.error(`Error downloading report: ${error as string}`);
         } finally {
             setLoading(false);
         }

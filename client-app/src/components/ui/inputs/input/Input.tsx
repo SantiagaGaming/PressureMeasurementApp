@@ -1,13 +1,19 @@
+import Image from 'next/image';
 import styles from './Input.module.css';
+
 interface InputProps {
     value: string;
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
     placeholder: string;
-    imgName: string;
-    type?: 'text' | 'number'; 
+    imgName?: string; 
+    type?: 'text' | 'number';
     readonly?: boolean;
     name: string;
+    alt?: string; 
+    width?: number; 
+    height?: number;
 }
+
 const Input = ({
     value,
     onChange,
@@ -16,10 +22,24 @@ const Input = ({
     type = 'text',
     readonly = false,
     name,
+    alt = '', 
+    width = 20, 
+    height = 20,
 }: InputProps) => {
     return (
         <div className={styles.input}>
-            {imgName && <img src={`/public/${imgName}`} alt="" />}
+            {imgName && (
+                <div className={styles.iconContainer}>
+                    <Image
+                        src={`/public/${imgName}`}
+                        alt={alt}
+                        width={width}
+                        height={height}
+                        className={styles.icon}
+                        priority={false}
+                    />
+                </div>
+            )}
             <input
                 className={styles.text}
                 type={type}
@@ -29,8 +49,10 @@ const Input = ({
                 readOnly={readonly}
                 name={name}
                 disabled={readonly}
+                aria-label={placeholder} 
             />
         </div>
     );
 };
+
 export default Input;

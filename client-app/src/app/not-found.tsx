@@ -7,7 +7,7 @@ const NotFound = () => {
     };
     return (
         <>
-            <h1>Page doesn't exist.</h1>
+            <h1>Page not exist.</h1>
             <TextButton text="Back to home" onClick={handleRedirect} />
         </>
     );

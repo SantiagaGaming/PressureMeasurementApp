@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import styles from './TextButton.module.css';
 
 interface TextButtonProps {
@@ -25,14 +26,17 @@ const TextButton = ({
                 disabled={!enabled}
             >
                 {icon && (
-                    <img
-                        src={import.meta.env.BASE_URL + icon}
+                    <Image
+                        src={icon}
                         alt=""
                         className={
                             variant === 'primary' || variant === 'dark'
                                 ? styles.imgLight
                                 : styles.imgDark
                         }
+                        width={24}
+                        height={24}
+                        priority={false}
                     />
                 )}
                 {text}

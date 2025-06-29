@@ -9,12 +9,11 @@ import { useRouter } from 'next/navigation';
 
 interface Props {
     onToggle?: (expanded: boolean) => void;
-    baseUrl?: string;
 }
 
 type NavLink = 'measurements' | 'about';
 
-const NavBar = ({ onToggle, baseUrl = '' }: Props) => {
+const NavBar = ({ onToggle }: Props) => {
     const [expanded, setExpanded] = useState(false);
     const [activeLink, setActiveLink] = useState<NavLink>('measurements');
     const pathname = usePathname();
