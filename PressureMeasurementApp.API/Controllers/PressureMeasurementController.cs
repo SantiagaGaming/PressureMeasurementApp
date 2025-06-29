@@ -49,7 +49,7 @@ namespace PressureMeasurementApp.API.Controllers
                     request.Pressures, request.Lifestyle);
 
                 return
-                    mapper.Map<PressureMeasurementResponse>(measurement);
+                    Ok(mapper.Map<PressureMeasurementResponse>(measurement));
             }
             catch (Exception ex)
             {

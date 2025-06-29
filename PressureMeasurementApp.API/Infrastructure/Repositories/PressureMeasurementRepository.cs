@@ -15,12 +15,16 @@ namespace PressureMeasurementApp.API.Infrastructure.Repositories
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         }
 
-        public async Task CreateAsync(PressureMeasurement item)
+        public async Task<PressureMeasurement> CreateAsync(PressureMeasurement item)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
 
             await _dbContext.PressureMeasurements.AddAsync(item);
             await SaveAsync();
+            await _dbContext.Entry(item)
+          .Reference(p => p.PressureState)
+          .LoadAsync();
+            return item;
         }
 
         public async Task<bool> DeleteAsync(int id)

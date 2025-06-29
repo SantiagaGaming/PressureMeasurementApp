@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PressureMeasurementApp.API"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KafkaConsumerConsoleApp", "KafkaConsumerConsoleApp\KafkaConsumerConsoleApp.csproj", "{B5E42386-BA68-430E-A670-41F6DE1CC3EB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PressureMeasurementApp.API.Tests", "PressureMeasurementApp.API.Tests\PressureMeasurementApp.API.Tests.csproj", "{721CBA95-DBF6-8676-EB35-3CFE2564201A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{B5E42386-BA68-430E-A670-41F6DE1CC3EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B5E42386-BA68-430E-A670-41F6DE1CC3EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B5E42386-BA68-430E-A670-41F6DE1CC3EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{721CBA95-DBF6-8676-EB35-3CFE2564201A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{721CBA95-DBF6-8676-EB35-3CFE2564201A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{721CBA95-DBF6-8676-EB35-3CFE2564201A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{721CBA95-DBF6-8676-EB35-3CFE2564201A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

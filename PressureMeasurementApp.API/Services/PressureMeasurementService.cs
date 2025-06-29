@@ -9,7 +9,7 @@ namespace PressureMeasurementApp.API.Services
     public class PressureMeasurementService(
      IRepository<PressureMeasurement> repository,
      IPressureConverter converter,
-     IMapper mapper,IKafkaProducer kafkaProducer,
+     IMapper mapper, IKafkaProducer kafkaProducer,
      ICacheService cache) : IPressureMeasurementService
     {
         private const string _cacheKey = "pressure:latest";
@@ -25,7 +25,7 @@ namespace PressureMeasurementApp.API.Services
             try
             {
                 var measurement = converter.ConvertPressure(pressures, lifestyle);
-                await repository.CreateAsync(measurement);
+                var createResult = await repository.CreateAsync(measurement);
 
                 var dto = new
                 {
@@ -40,7 +40,7 @@ namespace PressureMeasurementApp.API.Services
                 await kafkaProducer.PublishAsync("pressure-events", json);
                 await cache.RemoveAsync(_cacheKey);
 
-                return measurement;
+                return createResult;
             }
             catch (Exception ex)
             {
@@ -66,7 +66,7 @@ namespace PressureMeasurementApp.API.Services
 
         public async Task DeleteMeasurementAsync(int id)
         {
-           var result = await repository.DeleteAsync(id);
+            var result = await repository.DeleteAsync(id);
             if (!result)
                 throw new ArgumentException($"Can't find measurement with id:{id}", nameof(id));
             var dto = new
@@ -97,7 +97,7 @@ namespace PressureMeasurementApp.API.Services
 
         public async Task<IEnumerable<PressureMeasurement>> GetLatestMeasurementsAsync()
         {
-   
+
             var cached = await cache.GetAsync<IEnumerable<PressureMeasurement>>(_cacheKey);
 
             if (cached != null)
@@ -105,7 +105,7 @@ namespace PressureMeasurementApp.API.Services
 
             var latest = await repository.GetLatestAsync(10);
 
-            var list = latest.ToList(); 
+            var list = latest.ToList();
             await cache.SetAsync(_cacheKey, list);
 
             return list;

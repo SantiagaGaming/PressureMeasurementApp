@@ -6,7 +6,7 @@ namespace PressureMeasurementApp.API.Interfaces
     {
         Task<IEnumerable<T>> GetAllWithDatesAsync(DateTime from, DateTime till);
         Task<T> GetEntityAsync(int id);
-        Task CreateAsync(T item);
+        Task <PressureMeasurement> CreateAsync(T item);
         Task<bool> UpdateAsync(int id, T item);
         Task<bool> DeleteAsync(int id);
         Task<IEnumerable<PressureMeasurement>> GetLatestAsync(int count);
