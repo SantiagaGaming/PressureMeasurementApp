@@ -16,6 +16,7 @@ namespace PressureMeasurementApp.API
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.WebHost.UseUrls("http://0.0.0.0:5000");
             builder.Services.AddCors(policy => policy.AddPolicy("default", opt =>
             {
                 opt.AllowAnyHeader();
@@ -31,14 +32,7 @@ namespace PressureMeasurementApp.API
             builder.Services.AddSwaggerGen();
             builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
             {
-                var configuration = ConfigurationOptions.Parse(
-                    builder.Configuration.GetConnectionString("Redis"),
-                    true);
-
-                configuration.AbortOnConnectFail = false;
-                configuration.ConnectRetry = 5;
-                configuration.ConnectTimeout = 5000;
-
+                var configuration = ConfigurationOptions.Parse(builder.Configuration.GetConnectionString("Redis"));
                 return ConnectionMultiplexer.Connect(configuration);
             });
             builder.Services.AddSingleton<ICacheService, RedisCacheService>();
@@ -51,12 +45,17 @@ namespace PressureMeasurementApp.API
 
             var app = builder.Build();
 
-            app.UseCors("default");
-            app.UseRouting();
             app.UseSwagger();
             app.UseSwaggerUI();
+            app.UseCors("default");
+            app.UseRouting();
 
-            app.MapControllers();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller}/{action=Index}/{id?}");
+            });
             app.Run();
         }
     }
