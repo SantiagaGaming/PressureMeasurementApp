@@ -5,13 +5,13 @@ import {
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'http://localhost:5000/api',
+    baseURL: 'http://localhost:5000',
 });
 
 export const PressureMeasurementService = {
     getAllWithDates: async (from: Date, till: Date) => {
         const response = await api.get<PressureMeasurementDto[]>(
-            '/PressureMeasurement/withDates',
+            '/api/PressureMeasurement/withDates',
             {
                 params: { from: from.toISOString(), till: till.toISOString() },
             }
@@ -21,44 +21,44 @@ export const PressureMeasurementService = {
 
     getLatest: async () => {
         const response = await api.get<PressureMeasurementDto[]>(
-            '/PressureMeasurement/latest'
+            '/api/PressureMeasurement/latest'
         );
         return response.data;
     },
 
     getById: async (id: number) => {
         const response = await api.get<PressureMeasurementDto>(
-            `/PressureMeasurement/${id}`
+            `/api/PressureMeasurement/${id}`
         );
         return response.data;
     },
 
     create: async (request: CreateMeasurementRequest) => {
         const response = await api.post<PressureMeasurementDto>(
-            '/PressureMeasurement',
+            '/api/PressureMeasurement',
             request
         );
         return response.data;
     },
 
     update: async (id: number, request: PressureMeasurementDto) => {
-        await api.put(`/PressureMeasurement/${id}`, request);
+        await api.put(`/api/PressureMeasurement/${id}`, request);
     },
 
     delete: async (id: number) => {
-        await api.delete(`/PressureMeasurement/${id}`);
+        await api.delete(`/api/PressureMeasurement/${id}`);
     },
 };
 export const FileService = {
     getXlsxLatest: async () => {
-        const response = await api.get('/Reports/xlsxLatest', {
+        const response = await api.get('/api/Reports/xlsxLatest', {
             responseType: 'blob',
         });
         return response.data;
     },
 
     getXlsxWithDates: async (from: Date, till: Date) => {
-        const response = await api.get('/Reports/xlsxWithDates', {
+        const response = await api.get('/api/Reports/xlsxWithDates', {
             params: { from: from.toISOString(), till: till.toISOString() },
             responseType: 'blob',
         });
