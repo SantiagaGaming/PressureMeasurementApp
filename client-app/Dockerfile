@@ -5,8 +5,13 @@ RUN npm ci
 
 FROM node:18-alpine AS builder
 WORKDIR /app
+
+ARG HOST_IP=localhost
+ENV NEXT_PUBLIC_API_URL=http://${HOST_IP}:5000
+
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+
 RUN npm run build
 
 FROM node:18-alpine AS runner
