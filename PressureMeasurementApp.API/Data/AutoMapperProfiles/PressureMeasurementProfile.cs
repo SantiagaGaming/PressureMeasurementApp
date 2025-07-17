@@ -15,7 +15,7 @@ namespace PressureMeasurementApp.API.Data.AutoMapperProfiles
                           opt => opt.MapFrom(src => src.PressureState != null ? src.PressureState.Name : null))
                 .ForMember(dest => dest.PressureAllStats,
                           opt => opt.MapFrom(src =>
-                              $"{src.PressureState.Name}/{src.LowerPressure}/{src.Heartbeat}"))
+                              $"{src.UpperPressure}/{src.LowerPressure}/{src.Heartbeat}"))
                 .ForMember(dest => dest.Smoking,
                           opt => opt.MapFrom(src => src.Smoking ? "Yes" : "No"))
                 .ForMember(dest => dest.Alcohol,

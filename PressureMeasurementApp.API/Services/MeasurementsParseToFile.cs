@@ -42,7 +42,7 @@ namespace PressureMeasurementApp.API.Services
 
                         var sheet = CreateSheet(spreadsheetDocument, "Pressure measurements", title,
                             new string[] {
-                                "Pressure stats", "Description", "Smoking?", "Alcohol?","Sport?", "Stretching?","Status","Date of measurement" },
+                                "Number","Pressure stats", "Description", "Smoking?", "Alcohol?","Sport?", "Stretching?","Status","Date of measurement" },
                             measurements);
 
                         sheets.Append(sheet);
