@@ -9,7 +9,7 @@ namespace PressureMeasurementApp.API.Services
     public class PressureMeasurementService(
      IRepository<PressureMeasurement> repository,
      IPressureConverter converter,
-     IMapper mapper, IKafkaProducer kafkaProducer,
+     IKafkaProducer kafkaProducer,
      ICacheService cache) : IPressureMeasurementService
     {
         private const string _cacheKey = "pressure:latest";
@@ -33,6 +33,12 @@ namespace PressureMeasurementApp.API.Services
                     Date = measurement.MeasureDate,
                     UpperPressure = measurement.UpperPressure,
                     LowerPressure = measurement.LowerPressure,
+                    Heartbeat= measurement.Heartbeat,
+                    Smoking = measurement.Smoking,
+                    Alcohol = measurement.Alcohol,
+                    Sport = measurement.Sport,
+                    Stretching = measurement.Stretching,
+                    PressureState = measurement.PressureState,
                     Message = "New pressure measurement added"
                 };
 
@@ -50,18 +56,28 @@ namespace PressureMeasurementApp.API.Services
 
         public async Task UpdateMeasurementAsync(int id, PressureMeasurement request)
         {
+
             var existing = await repository.GetEntityAsync(id)
                 ?? throw new ArgumentException($"Can't find measurement with id:{id}", nameof(request));
             var dto = new
             {
+                Id = request.Id,
+                Date = request.MeasureDate,
+                UpperPressure = request.UpperPressure,
+                LowerPressure = request.LowerPressure,
+                Heartbeat = request.Heartbeat,
+                Smoking = request.Smoking,
+                Alcohol = request.Alcohol,
+                Sport = request.Sport,
+                Stretching = request.Stretching,
+                PressureState = request.PressureState,
                 Message = $"Measurement with id{id} was updated"
             };
-
-            string json = JsonSerializer.Serialize(dto);
-            await kafkaProducer.PublishAsync("pressure-events", json);
             await repository.UpdateAsync(id, request);
             await cache.RemoveAsync(_cacheKey);
             await cache.RemoveAsync($"pressure:{id}");
+            string json = JsonSerializer.Serialize(dto);
+            await kafkaProducer.PublishAsync("pressure-events", json);
         }
 
         public async Task DeleteMeasurementAsync(int id)
@@ -69,15 +85,16 @@ namespace PressureMeasurementApp.API.Services
             var result = await repository.DeleteAsync(id);
             if (!result)
                 throw new ArgumentException($"Can't find measurement with id:{id}", nameof(id));
+            await cache.RemoveAsync(_cacheKey);
+            await cache.RemoveAsync($"pressure:{id}");
             var dto = new
             {
+                Id = id,
                 Message = $"Measurement with id{id} was deleted"
             };
 
             string json = JsonSerializer.Serialize(dto);
             await kafkaProducer.PublishAsync("pressure-events", json);
-            await cache.RemoveAsync(_cacheKey);
-            await cache.RemoveAsync($"pressure:{id}");
         }
 
         public async Task<PressureMeasurement> GetMeasurementAsync(int id)
