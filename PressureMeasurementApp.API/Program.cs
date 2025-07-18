@@ -42,6 +42,7 @@ namespace PressureMeasurementApp.API
             builder.Services.AddTransient<IParseToFile<PressureMeasurementToFile>, MeasurementsParseToFile>();
             builder.Services.AddTransient<IPressureConverter, PressureConverter>();
             builder.Services.AddTransient<IPressureMeasurementService, PressureMeasurementService>();
+            builder.Services.AddTransient<IKafkaMessanger, KafkaMessanger>();
 
             var app = builder.Build();
 

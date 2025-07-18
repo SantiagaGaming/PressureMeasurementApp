@@ -1,15 +1,13 @@
-﻿using AutoMapper;
-using PressureMeasurementApp.API.Data.Dto;
+﻿using PressureMeasurementApp.API.Data.Dto;
 using PressureMeasurementApp.API.Data.Entitites;
 using PressureMeasurementApp.API.Interfaces;
-using System.Text.Json;
 
 namespace PressureMeasurementApp.API.Services
 {
     public class PressureMeasurementService(
      IRepository<PressureMeasurement> repository,
      IPressureConverter converter,
-     IMapper mapper, IKafkaProducer kafkaProducer,
+     IKafkaMessanger kafkaMessanger,
      ICacheService cache) : IPressureMeasurementService
     {
         private const string _cacheKey = "pressure:latest";
@@ -27,18 +25,8 @@ namespace PressureMeasurementApp.API.Services
                 var measurement = converter.ConvertPressure(pressures, lifestyle);
                 var createResult = await repository.CreateAsync(measurement);
 
-                var dto = new
-                {
-                    Id = measurement.Id,
-                    Date = measurement.MeasureDate,
-                    UpperPressure = measurement.UpperPressure,
-                    LowerPressure = measurement.LowerPressure,
-                    Message = "New pressure measurement added"
-                };
-
-                string json = JsonSerializer.Serialize(dto);
-                await kafkaProducer.PublishAsync("pressure-events", json);
                 await cache.RemoveAsync(_cacheKey);
+                await kafkaMessanger.CreateAsync(measurement);
 
                 return createResult;
             }
@@ -52,16 +40,17 @@ namespace PressureMeasurementApp.API.Services
         {
             var existing = await repository.GetEntityAsync(id)
                 ?? throw new ArgumentException($"Can't find measurement with id:{id}", nameof(request));
-            var dto = new
+            try
             {
-                Message = $"Measurement with id{id} was updated"
-            };
-
-            string json = JsonSerializer.Serialize(dto);
-            await kafkaProducer.PublishAsync("pressure-events", json);
-            await repository.UpdateAsync(id, request);
-            await cache.RemoveAsync(_cacheKey);
-            await cache.RemoveAsync($"pressure:{id}");
+                await repository.UpdateAsync(id, request);
+                await cache.RemoveAsync(_cacheKey);
+                await cache.RemoveAsync($"pressure:{id}");
+                await kafkaMessanger.CreateAsync(request);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
 
         public async Task DeleteMeasurementAsync(int id)
@@ -69,15 +58,16 @@ namespace PressureMeasurementApp.API.Services
             var result = await repository.DeleteAsync(id);
             if (!result)
                 throw new ArgumentException($"Can't find measurement with id:{id}", nameof(id));
-            var dto = new
+            try
             {
-                Message = $"Measurement with id{id} was deleted"
-            };
-
-            string json = JsonSerializer.Serialize(dto);
-            await kafkaProducer.PublishAsync("pressure-events", json);
-            await cache.RemoveAsync(_cacheKey);
-            await cache.RemoveAsync($"pressure:{id}");
+                await cache.RemoveAsync(_cacheKey);
+                await cache.RemoveAsync($"pressure:{id}");
+                await kafkaMessanger.RemoveAsync(id);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
 
         public async Task<PressureMeasurement> GetMeasurementAsync(int id)
@@ -97,17 +87,15 @@ namespace PressureMeasurementApp.API.Services
 
         public async Task<IEnumerable<PressureMeasurement>> GetLatestMeasurementsAsync()
         {
-
             var cached = await cache.GetAsync<IEnumerable<PressureMeasurement>>(_cacheKey);
 
             if (cached != null)
                 return cached;
 
             var latest = await repository.GetLatestAsync(10);
-
             var list = latest.ToList();
-            await cache.SetAsync(_cacheKey, list);
 
+            await cache.SetAsync(_cacheKey, list);
             return list;
         }
     }

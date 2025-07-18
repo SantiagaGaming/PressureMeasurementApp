@@ -2,55 +2,67 @@ version: '3.8'
 
 services:
   pressure-measurement-app.api:
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Production
-      - ASPNETCORE_URLS=http://+:5000
-      - DOTNET_NOLOGO=true
-      - DOTNET_CLI_TELEMETRY_OPTOUT=1
-    container_name: pressure-measurement-app.api
-    image: pressure-measurement-app.api
     build:
       context: PressureMeasurementApp.API/
       dockerfile: Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:5000
+      - Kafka__BootstrapServers=kafka:9092
     ports:
       - "5000:5000"
-      - "8080:8080"
+    depends_on:
+      - redis
+      - kafka
     networks:
       - app-network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-    extra_hosts:
-      - "host.docker.internal:${HOST_IP}"
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - app-network
+
+  kafka:
+    image: bitnami/kafka:latest
+    ports:
+      - "9092:9092"  
+      - "29092:29092"
+    environment:
+      - KAFKA_ENABLE_KRAFT=yes
+      - KAFKA_CFG_NODE_ID=1
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka:9093
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,PLAINTEXT_HOST://:29092,CONTROLLER://:9093
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    volumes:
+      - kafka_data:/bitnami/kafka
+    networks:
+      - app-network
 
   pressure-measurement-app.client:
     build:
       context: client-app/
       dockerfile: Dockerfile
-    image: pressure-measurement-app.client
-    container_name: pressure-measurement-app.client
     ports:
       - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=http://pressure-measurement-app.api:5000
     depends_on:
       pressure-measurement-app.api:
         condition: service_healthy
-    environment:
-      - NODE_ENV=production
-      - NEXT_PUBLIC_API_URL=http://${HOST_IP}:5000
-      - NEXT_TELEMETRY_DISABLED=1
-      - PORT=3000
     networks:
       - app-network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    extra_hosts:
-      - "host.docker.internal:${HOST_IP}"
 
 networks:
   app-network:
     driver: bridge
+
+volumes:
+  kafka_data:
