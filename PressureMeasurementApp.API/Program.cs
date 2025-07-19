@@ -53,7 +53,7 @@ namespace PressureMeasurementApp.API
 
             app.UseEndpoints(endpoints =>
             {
-                app.MapControllers();
+                endpoints.MapControllers();
             });
             app.Run();
         }
