@@ -53,9 +53,7 @@ namespace PressureMeasurementApp.API
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller}/{action=Index}/{id?}");
+                app.MapControllers();
             });
             app.Run();
         }
