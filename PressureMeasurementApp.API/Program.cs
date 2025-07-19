@@ -1,7 +1,8 @@
-
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using PressureMeasurementApp.API.Data.Dto;
 using PressureMeasurementApp.API.Data.Entitites;
+using PressureMeasurementApp.API.Hubs;
 using PressureMeasurementApp.API.Infrastructure.Context;
 using PressureMeasurementApp.API.Infrastructure.Repositories;
 using PressureMeasurementApp.API.Interfaces;
@@ -29,21 +30,21 @@ namespace PressureMeasurementApp.API
             builder.Services.AddHttpContextAccessor();
             var connectionString = builder.Configuration.GetConnectionString("AppDbConnection");
             builder.Services.AddDbContext<AppDbContext>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
-            builder.Services.AddSwaggerGen();
             builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
             {
                 var configuration = ConfigurationOptions.Parse(builder.Configuration.GetConnectionString("Redis"));
                 return ConnectionMultiplexer.Connect(configuration);
             });
+            builder.Services.AddSignalR();
             builder.Services.AddSingleton<ICacheService, RedisCacheService>();
             builder.Services.AddSingleton<IKafkaProducer, KafkaProducer>();
             builder.Services.AddAutoMapper(typeof(Program));
             builder.Services.AddTransient<IRepository<PressureMeasurement>, PressureMeasurementRepository>();
             builder.Services.AddTransient<IParseToFile<PressureMeasurementToFile>, MeasurementsParseToFile>();
             builder.Services.AddTransient<IPressureConverter, PressureConverter>();
-            builder.Services.AddTransient<IPressureMeasurementService, PressureMeasurementService>();
             builder.Services.AddTransient<IKafkaMessanger, KafkaMessanger>();
-
+            builder.Services.AddTransient<IPressureMeasurementService, PressureMeasurementService>();
+            builder.Services.AddSwaggerGen();
             var app = builder.Build();
 
             app.UseSwagger();
@@ -53,7 +54,8 @@ namespace PressureMeasurementApp.API
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapControllers(); 
+                endpoints.MapHub<PressureMeasurementHub>("/pressureHub");
             });
             app.Run();
         }

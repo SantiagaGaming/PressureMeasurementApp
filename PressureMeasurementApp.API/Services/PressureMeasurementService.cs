@@ -1,5 +1,7 @@
-﻿using PressureMeasurementApp.API.Data.Dto;
+﻿using Microsoft.AspNetCore.SignalR;
+using PressureMeasurementApp.API.Data.Dto;
 using PressureMeasurementApp.API.Data.Entitites;
+using PressureMeasurementApp.API.Hubs;
 using PressureMeasurementApp.API.Interfaces;
 
 namespace PressureMeasurementApp.API.Services
@@ -8,7 +10,7 @@ namespace PressureMeasurementApp.API.Services
      IRepository<PressureMeasurement> repository,
      IPressureConverter converter,
      IKafkaMessanger kafkaMessanger,
-     ICacheService cache) : IPressureMeasurementService
+     ICacheService cache, IHubContext<PressureMeasurementHub> hubContext) : IPressureMeasurementService
     {
         private const string _cacheKey = "pressure:latest";
         public async Task<IEnumerable<PressureMeasurement>> GetMeasurementsAsync(
@@ -27,7 +29,7 @@ namespace PressureMeasurementApp.API.Services
 
                 await cache.RemoveAsync(_cacheKey);
                 await kafkaMessanger.CreateAsync(measurement);
-
+                await hubContext.Clients.All.SendAsync("MeasurementAdded", createResult);
                 return createResult;
             }
             catch (Exception ex)
@@ -46,6 +48,7 @@ namespace PressureMeasurementApp.API.Services
                 await cache.RemoveAsync(_cacheKey);
                 await cache.RemoveAsync($"pressure:{id}");
                 await kafkaMessanger.CreateAsync(request);
+                await hubContext.Clients.All.SendAsync("MeasurementUpdated", request);
             }
             catch (Exception ex)
             {
@@ -63,6 +66,7 @@ namespace PressureMeasurementApp.API.Services
                 await cache.RemoveAsync(_cacheKey);
                 await cache.RemoveAsync($"pressure:{id}");
                 await kafkaMessanger.RemoveAsync(id);
+                await hubContext.Clients.All.SendAsync("MeasurementDeleted", id);
             }
             catch (Exception ex)
             {

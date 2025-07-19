@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import PressureTable from '@/components/tables/PressureTable';
 import {
     CreateMeasurementRequest,
@@ -10,6 +10,7 @@ import AddMeasurementModal from '@/components/modals/addMeasurementModal/AddMeas
 import ChoiseModal from '@/components/modals/choiceModal/ChoiseModal';
 import EditMeasurementModal from '@/components/modals/editMeasurementModal/EditMeasurementModal';
 import CalendarInput from '@/components/ui/inputs/calendarInput/CalendarInput';
+import usePressureMeasurementHub from '@/hooks/usePressureMeasurementHub';
 
 interface PressureMeasurementViewProps {
     measurements: PressureMeasurementDto[];
@@ -28,7 +29,7 @@ interface PressureMeasurementViewProps {
 }
 
 const Index = ({
-    measurements,
+    measurements : initialMeasurements,
     loading,
     currentPage,
     totalPages,
@@ -48,6 +49,28 @@ const Index = ({
     const [orderToDeleteId, setOrderToDeleteId] = useState<number>(-1);
     const [fromDate, setFromDate] = useState<Date | null>(null);
     const [tillDate, setTillDate] = useState<Date | null>(null);
+    const [measurements, setMeasurements] = useState<PressureMeasurementDto[]>(initialMeasurements);
+    useEffect(() => {
+    setMeasurements(initialMeasurements);
+}, [initialMeasurements]);
+  const handleMeasurementAdded = useCallback((newMeasurement: PressureMeasurementDto) => {
+        setMeasurements(prev => [newMeasurement, ...prev]);
+    }, []);
+
+    const handleMeasurementUpdated = useCallback((updatedMeasurement: PressureMeasurementDto) => {
+        setMeasurements(prev => prev.map(m => 
+            m.id === updatedMeasurement.id ? updatedMeasurement : m
+        ));
+    }, []);
+
+    const handleMeasurementDeleted = useCallback((id: number) => {
+        setMeasurements(prev => prev.filter(m => m.id !== id));
+    }, []);
+     usePressureMeasurementHub({
+        onMeasurementAdded: handleMeasurementAdded,
+        onMeasurementUpdated: handleMeasurementUpdated,
+        onMeasurementDeleted: handleMeasurementDeleted
+    });
     const handleCloseAddModal = () => {
         setAddModal(false);
     };
