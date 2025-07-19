@@ -1,5 +1,5 @@
 'use client';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import PressureTable from '@/components/tables/PressureTable';
 import {
     CreateMeasurementRequest,
@@ -49,7 +49,10 @@ const Index = ({
     const [orderToDeleteId, setOrderToDeleteId] = useState<number>(-1);
     const [fromDate, setFromDate] = useState<Date | null>(null);
     const [tillDate, setTillDate] = useState<Date | null>(null);
-    const [measurements, setMeasurements] = useState(initialMeasurements);
+    const [measurements, setMeasurements] = useState<PressureMeasurementDto[]>(initialMeasurements);
+    useEffect(() => {
+    setMeasurements(initialMeasurements);
+}, [initialMeasurements]);
   const handleMeasurementAdded = useCallback((newMeasurement: PressureMeasurementDto) => {
         setMeasurements(prev => [newMeasurement, ...prev]);
     }, []);
