@@ -30,7 +30,6 @@ namespace PressureMeasurementApp.API
             builder.Services.AddHttpContextAccessor();
             var connectionString = builder.Configuration.GetConnectionString("AppDbConnection");
             builder.Services.AddDbContext<AppDbContext>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
-            builder.Services.AddSwaggerGen();
             builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
             {
                 var configuration = ConfigurationOptions.Parse(builder.Configuration.GetConnectionString("Redis"));
@@ -45,9 +44,7 @@ namespace PressureMeasurementApp.API
             builder.Services.AddTransient<IPressureConverter, PressureConverter>();
             builder.Services.AddTransient<IKafkaMessanger, KafkaMessanger>();
             builder.Services.AddTransient<IPressureMeasurementService, PressureMeasurementService>();
-            builder.Services.AddSingleton<IHubContext<PressureMeasurementHub>>(provider =>
-         provider.GetRequiredService<IHubContext<PressureMeasurementHub>>());
-
+            builder.Services.AddSwaggerGen();
             var app = builder.Build();
 
             app.UseSwagger();
@@ -55,10 +52,10 @@ namespace PressureMeasurementApp.API
             app.UseCors("default");
             app.UseRouting();
 
-            app.MapHub<PressureMeasurementHub>("/pressureHub");
             app.UseEndpoints(endpoints =>
             {
-    endpoints.MapControllers();
+                endpoints.MapControllers(); 
+                endpoints.MapHub<PressureMeasurementHub>("/pressureHub");
             });
             app.Run();
         }

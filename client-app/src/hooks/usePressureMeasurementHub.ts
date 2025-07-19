@@ -17,7 +17,7 @@ const usePressureMeasurementHub = ({
 
     useEffect(() => {
         const newConnection = new HubConnectionBuilder()
-            .withUrl(`${process.env.NEXT_PUBLIC_API_URL}/pressureMeasurementHub`)
+            .withUrl(`${process.env.NEXT_PUBLIC_API_URL}/pressureHub`)
             .withAutomaticReconnect()
             .build();
 
