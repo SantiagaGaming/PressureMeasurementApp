@@ -44,18 +44,17 @@ namespace PressureMeasurementApp.API
             builder.Services.AddTransient<IParseToFile<PressureMeasurementToFile>, MeasurementsParseToFile>();
             builder.Services.AddTransient<IPressureConverter, PressureConverter>();
             builder.Services.AddTransient<IKafkaMessanger, KafkaMessanger>();
-            builder.Services.AddScoped<IPressureMeasurementService, PressureMeasurementService>();
+            builder.Services.AddTransient<IPressureMeasurementService, PressureMeasurementService>();
             builder.Services.AddSingleton<IHubContext<PressureMeasurementHub>>(provider =>
          provider.GetRequiredService<IHubContext<PressureMeasurementHub>>());
 
             var app = builder.Build();
 
+            app.UseSwagger();
+            app.UseSwaggerUI();
             app.UseCors("default");
             app.UseRouting();
 
-            app.UseSwagger();
-            app.UseSwaggerUI();
-         
             app.MapHub<PressureMeasurementHub>("/pressureHub");
             app.UseEndpoints(endpoints =>
             {
