@@ -1,7 +1,8 @@
-
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using PressureMeasurementApp.API.Data.Dto;
 using PressureMeasurementApp.API.Data.Entitites;
+using PressureMeasurementApp.API.Hubs;
 using PressureMeasurementApp.API.Infrastructure.Context;
 using PressureMeasurementApp.API.Infrastructure.Repositories;
 using PressureMeasurementApp.API.Interfaces;
@@ -35,27 +36,30 @@ namespace PressureMeasurementApp.API
                 var configuration = ConfigurationOptions.Parse(builder.Configuration.GetConnectionString("Redis"));
                 return ConnectionMultiplexer.Connect(configuration);
             });
+            builder.Services.AddSignalR();
             builder.Services.AddSingleton<ICacheService, RedisCacheService>();
             builder.Services.AddSingleton<IKafkaProducer, KafkaProducer>();
             builder.Services.AddAutoMapper(typeof(Program));
             builder.Services.AddTransient<IRepository<PressureMeasurement>, PressureMeasurementRepository>();
             builder.Services.AddTransient<IParseToFile<PressureMeasurementToFile>, MeasurementsParseToFile>();
             builder.Services.AddTransient<IPressureConverter, PressureConverter>();
-            builder.Services.AddTransient<IPressureMeasurementService, PressureMeasurementService>();
             builder.Services.AddTransient<IKafkaMessanger, KafkaMessanger>();
+            builder.Services.AddScoped<IPressureMeasurementService, PressureMeasurementService>();
+            builder.Services.AddSingleton<IHubContext<PressureMeasurementHub>>(provider =>
+         provider.GetRequiredService<IHubContext<PressureMeasurementHub>>());
 
             var app = builder.Build();
 
-            app.UseSwagger();
-            app.UseSwaggerUI();
             app.UseCors("default");
             app.UseRouting();
 
+            app.UseSwagger();
+            app.UseSwaggerUI();
+         
+            app.MapHub<PressureMeasurementHub>("/pressureHub");
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller}/{action=Index}/{id?}");
+    endpoints.MapControllers();
             });
             app.Run();
         }
