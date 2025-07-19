@@ -4,7 +4,7 @@ interface CheckboxProps {
     id: string;
     name: string;
     checked: boolean;
-    onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
     readOnly?: boolean;
 }
 

@@ -196,14 +196,18 @@ const PressureTable = ({
                                     <TextButton
                                         text="Edit"
                                         variant="light"
-                                        onClick={() => onSetId(measurement.id)}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            onSetId(measurement.id);
+                                        }}
                                     />
                                     <TextButton
                                         text="Delete"
                                         variant="danger"
-                                        onClick={() =>
-                                            onSetDeleteId(measurement.id)
-                                        }
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            onSetDeleteId(measurement.id);
+                                        }}
                                     />
                                 </div>
                             </div>

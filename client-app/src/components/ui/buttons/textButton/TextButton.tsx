@@ -2,7 +2,7 @@ import Image from 'next/image';
 import styles from './TextButton.module.css';
 
 interface TextButtonProps {
-    onClick?: () => void;
+    onClick?: (e: React.MouseEvent) => void;
     text: string;
     icon?: string;
     variant?: string;

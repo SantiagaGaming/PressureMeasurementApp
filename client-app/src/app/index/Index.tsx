@@ -11,6 +11,7 @@ import ChoiseModal from '@/components/modals/choiceModal/ChoiseModal';
 import EditMeasurementModal from '@/components/modals/editMeasurementModal/EditMeasurementModal';
 import CalendarInput from '@/components/ui/inputs/calendarInput/CalendarInput';
 import usePressureMeasurementHub from '@/hooks/usePressureMeasurementHub';
+import ViewMeasurementModal from '@/components/modals/viewMeasurementModal copy/ViewMeasurementModal';
 
 interface PressureMeasurementViewProps {
     measurements: PressureMeasurementDto[];
@@ -45,6 +46,7 @@ const Index = ({
 }: PressureMeasurementViewProps) => {
     const [addModal, setAddModal] = useState(false);
     const [editModal, setEditModal] = useState(false);
+    const [viewModal, setViewModal] = useState(false);
     const [deleteModal, setDeleteModal] = useState(false);
     const [orderToDeleteId, setOrderToDeleteId] = useState<number>(-1);
     const [fromDate, setFromDate] = useState<Date | null>(null);
@@ -91,6 +93,10 @@ const Index = ({
     const handleOpenEditModal = (id: number) => {
         onGet(id);
         setEditModal(true);
+    };
+        const handleOpenViewModal = (id: number) => {
+        onGet(id);
+        setViewModal(true);
     };
     const handleGetMeasurementsWithDates = () => {
         if (onGetWithDates) {
@@ -148,6 +154,7 @@ const Index = ({
                     onSort={onSort}
                     onSetDeleteId={handleOpenDeleteModal}
                     onSetId={handleOpenEditModal}
+                    onRowClick={handleOpenViewModal}
                 />
             </div>
             <AddMeasurementModal
@@ -166,6 +173,11 @@ const Index = ({
                 open={editModal}
                 onClose={() => setEditModal(false)}
                 onSubmit={onUpdate}
+                measurement={measurement}
+            />
+            <ViewMeasurementModal
+                open={viewModal}
+                onClose={() => setViewModal(false)}
                 measurement={measurement}
             />
         </>
