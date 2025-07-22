@@ -1,4 +1,4 @@
-import styles from './ColoredText.module.css';
+import styles from './Text.module.css';
 
 type TextColor = keyof typeof TEXT_COLOR_MAP;
 type BackgroundColor = keyof typeof BACKGROUND_COLOR_MAP;
@@ -26,7 +26,7 @@ interface ColoredTextProps {
     textColor?: TextColor;
 }
 
-const ColoredText = ({
+const Text = ({
     text,
     borderColor = 'none',
     borderType,
@@ -56,4 +56,4 @@ const ColoredText = ({
     );
 };
 
-export default ColoredText;
+export default Text;

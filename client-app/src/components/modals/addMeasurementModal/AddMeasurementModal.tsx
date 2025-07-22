@@ -10,6 +10,7 @@ import Image from 'next/image';
 import { close } from '@/utils/constants';
 import Checkbox from '@/components/ui/inputs/checkBox/CheckBox';
 import { toast } from 'react-toastify';
+import Text from '@/components/ui/text/Text';
 
 interface AddMeasurementModalProps {
     open: boolean;
@@ -22,6 +23,7 @@ const AddMeasurementModal = ({
     onClose,
     onSubmit,
 }: AddMeasurementModalProps) => {
+    const [multipleMeasurements, setMultipleMeasurements] = useState(true);
     const [pressures, setPressures] = useState<PressureDto[]>([
         { upperPressure: 0, lowerPressure: 0, heartbeat: 0 },
         { upperPressure: 0, lowerPressure: 0, heartbeat: 0 },
@@ -54,12 +56,31 @@ const AddMeasurementModal = ({
         setLifestyle({ ...lifestyle, [field]: value });
     };
 
+    const handleMultipleMeasurementsChange = (checked: boolean) => {
+        setMultipleMeasurements(checked);
+        setPressures(
+            checked
+                ? [
+                      { upperPressure: 0, lowerPressure: 0, heartbeat: 0 },
+                      { upperPressure: 0, lowerPressure: 0, heartbeat: 0 },
+                      { upperPressure: 0, lowerPressure: 0, heartbeat: 0 },
+                      { upperPressure: 0, lowerPressure: 0, heartbeat: 0 },
+                  ]
+                : [{ upperPressure: 0, lowerPressure: 0, heartbeat: 0 }]
+        );
+    };
+
     const validateForm = (): boolean => {
-        // Проверяем все измерения давления
-        for (const pressure of pressures) {
-            if (pressure.upperPressure <= 0 || 
-                pressure.lowerPressure <= 0 || 
-                pressure.heartbeat <= 0) {
+        const measurementsToValidate = multipleMeasurements
+            ? pressures
+            : [pressures[0]];
+
+        for (const pressure of measurementsToValidate) {
+            if (
+                pressure.upperPressure <= 0 ||
+                pressure.lowerPressure <= 0 ||
+                pressure.heartbeat <= 0
+            ) {
                 return false;
             }
         }
@@ -68,18 +89,24 @@ const AddMeasurementModal = ({
 
     const handleSubmit = async () => {
         if (!validateForm()) {
-            toast.error("All fields must be filled with valid values!");
+            toast.error('All fields must be filled with valid values!');
             return;
         }
 
         try {
+            const measurementsToSubmit = multipleMeasurements
+                ? pressures
+                : [pressures[0]];
+
             const success = await onSubmit({
-                pressures: pressures,
+                pressures: measurementsToSubmit,
                 lifestyle: lifestyle,
             });
 
             if (success) {
                 onClose();
+                // Reset to default state
+                setMultipleMeasurements(true);
                 setPressures([
                     { upperPressure: 0, lowerPressure: 0, heartbeat: 0 },
                     { upperPressure: 0, lowerPressure: 0, heartbeat: 0 },
@@ -95,9 +122,10 @@ const AddMeasurementModal = ({
                 });
             }
         } catch (error) {
-            toast.error(`Failed to save measurement${ error}`);
+            toast.error(`Failed to save measurement${error}`);
         }
     };
+
     if (!open) return null;
 
     return (
@@ -107,73 +135,96 @@ const AddMeasurementModal = ({
                     <div className={styles.headerText}>
                         Add new pressure measurement
                     </div>
-                    <div className={styles.close}>
-                        <Image
-                            src={close}
-                            onClick={onClose}
-                            width={24}
-                            height={24}
-                            alt="cross"
-                        />
+                    <div className={styles.headerControls}>
+                        <div className={styles.multipleMeasurementsToggle}>
+                                              <Text text='Multiple measurements'/>
+                            <Checkbox
+                                id="multiple-measurements"
+                                name="multipleMeasurements"
+                                checked={multipleMeasurements}
+                                onChange={(e) =>
+                                    handleMultipleMeasurementsChange(
+                                        e.target.checked
+                                    )
+                                }
+                            />
+                        </div>
+                        <div className={styles.close}>
+                            <Image
+                                src={close}
+                                onClick={onClose}
+                                width={24}
+                                height={24}
+                                alt="cross"
+                            />
+                        </div>
                     </div>
                 </div>
 
                 <div className={styles.content}>
                     <div className={styles.section}>
                         <div className={styles.pressureGrid}>
-                            {pressures.map((pressure, index) => (
-                                <div
-                                    key={index}
-                                    className={styles.pressureCard}
-                                >
-                                    <h4>Measurement {index + 1}</h4>
-                                    <div className={styles.inputGroup}>
-                                        <label>Upper pressure:</label>
-                                        <input
-                                            type="number"
-                                            value={pressure.upperPressure}
-                                            onChange={(e) =>
-                                                handlePressureChange(
-                                                    index,
-                                                    'upperPressure',
-                                                    parseInt(e.target.value) ||
-                                                        0
-                                                )
-                                            }
-                                        />
+                            {pressures
+                                .slice(
+                                    0,
+                                    multipleMeasurements ? 4 : 1
+                                )
+                                .map((pressure, index) => (
+                                    <div
+                                        key={index}
+                                        className={styles.pressureCard}
+                                    >
+                                        <h4>Measurement {index + 1}</h4>
+                                        <div className={styles.inputGroup}>
+                                            <label>Upper pressure:</label>
+                                            <input
+                                                type="number"
+                                                value={pressure.upperPressure}
+                                                onChange={(e) =>
+                                                    handlePressureChange(
+                                                        index,
+                                                        'upperPressure',
+                                                        parseInt(
+                                                            e.target.value
+                                                        ) || 0
+                                                    )
+                                                }
+                                            />
+                                        </div>
+                                        <div className={styles.inputGroup}>
+                                            <label>Lower pressure:</label>
+                                            <input
+                                                type="number"
+                                                value={pressure.lowerPressure}
+                                                onChange={(e) =>
+                                                    handlePressureChange(
+                                                        index,
+                                                        'lowerPressure',
+                                                        parseInt(
+                                                            e.target.value
+                                                        ) || 0
+                                                    )
+                                                }
+                                            />
+                                        </div>
+                                        <div className={styles.inputGroup}>
+                                            <label>Heartbeat:</label>
+                                            <input
+                                                type="number"
+                                                value={pressure.heartbeat}
+                                                onChange={(e) =>
+                                                    handlePressureChange(
+                                                        index,
+                                                        'heartbeat',
+                                                        parseInt(
+                                                            e.target.value
+                                                        ) || 0
+                                                    )
+                                                }
+                                            />
+                                        </div>
                                     </div>
-                                    <div className={styles.inputGroup}>
-                                        <label>Lower pressure:</label>
-                                        <input
-                                            type="number"
-                                            value={pressure.lowerPressure}
-                                            onChange={(e) =>
-                                                handlePressureChange(
-                                                    index,
-                                                    'lowerPressure',
-                                                    parseInt(e.target.value) ||
-                                                        0
-                                                )
-                                            }
-                                        />
-                                    </div>
-                                    <div className={styles.inputGroup}>
-                                        <label>Heartbeat:</label>
-                                        <input
-                                            type="number"
-                                            value={pressure.heartbeat}
-                                            onChange={(e) =>
-                                                handlePressureChange(
-                                                    index,
-                                                    'heartbeat',
-                                                    parseInt(e.target.value) ||
-                                                        0
-                                                )
-                                            }
-                                        />
-                                    </div>
-                                </div>
-                            ))}
+                                ))}
                         </div>
                     </div>
 
@@ -260,4 +311,5 @@ const AddMeasurementModal = ({
         </div>
     );
 };
+
 export default AddMeasurementModal;

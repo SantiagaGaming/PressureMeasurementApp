@@ -127,3 +127,15 @@
 .button {
     width: 120px;
 }
+.headerControls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.multipleMeasurementsToggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+}

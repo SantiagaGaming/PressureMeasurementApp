@@ -38,8 +38,8 @@ namespace PressureMeasurementApp.API.Services
             if (lifestyle == null)
                 throw new ArgumentNullException(nameof(lifestyle), "Lifestyle cannot be null");
 
-            if (pressures.Count != 4)
-                throw new ArgumentException("Pressures count must be equal to 4", nameof(pressures));
+            if (pressures.Count != 4 && pressures.Count != 1)
+                throw new ArgumentException("Pressures count must be equal to 1 or 4", nameof(pressures));
             if (pressures.Any(p => !WrongPressureMeasurement(p)))
                 throw new ArgumentException("One or more pressure measurements have invalid values", nameof(pressures));
         }
