@@ -15,11 +15,11 @@ const Checkbox = ({
     onChange,
     readOnly = false,
 }: CheckboxProps) => {
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (!readOnly) {
-            onChange(e);
-        }
-    };
+const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!readOnly && onChange) {
+        onChange(e);
+    }
+};
 
     return (
         <div className={styles.checkboxContainer}>
