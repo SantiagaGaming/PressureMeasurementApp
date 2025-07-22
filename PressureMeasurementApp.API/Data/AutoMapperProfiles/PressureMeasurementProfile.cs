@@ -25,7 +25,7 @@ namespace PressureMeasurementApp.API.Data.AutoMapperProfiles
                 .ForMember(dest => dest.Stretching,
                           opt => opt.MapFrom(src => src.Stretching ? "Yes" : "No"))
                 .ForMember(dest => dest.MeasureDate,
-                          opt => opt.MapFrom(src => src.MeasureDate.ToString("dd.MM.yyyy")));
+                          opt => opt.MapFrom(src => src.MeasureDate.ToString("dd.MM.yyyy HH:mm")));
         }
     }
 }

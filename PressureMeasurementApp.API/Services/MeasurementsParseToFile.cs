@@ -17,6 +17,7 @@ namespace PressureMeasurementApp.API.Services
                 var measurements = entities.Select((measurement, i) => new
                 {
                     Index = i + 1,
+                    measurement.MeasureDate,
                     measurement.PressureAllStats,
                     measurement.Description,
                     measurement.Smoking,
@@ -24,7 +25,6 @@ namespace PressureMeasurementApp.API.Services
                     measurement.Sport,
                     measurement.Stretching,
                     measurement.PressureStateName,
-                    measurement.MeasureDate
                 });
 
                 string title = $"Pressure measurement report generated: {DateTime.Now.ToString("dd.MM.yy, HH:mm:ss")}";
@@ -42,7 +42,7 @@ namespace PressureMeasurementApp.API.Services
 
                         var sheet = CreateSheet(spreadsheetDocument, "Pressure measurements", title,
                             new string[] {
-                                "Number","Pressure stats", "Description", "Smoking?", "Alcohol?","Sport?", "Stretching?","Status","Date of measurement" },
+                                "Number","Date of measurement","Pressure stats", "Description", "Smoking?", "Alcohol?","Sport?", "Stretching?","Status" },
                             measurements);
 
                         sheets.Append(sheet);
