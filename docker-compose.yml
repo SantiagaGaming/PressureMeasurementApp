@@ -1,16 +1,63 @@
 version: '3.8'
 
 services:
-  pressure-measurement-app.api:
+  # API Gateway
+  api-gateway:
+    build:
+      context: ApiGateway/
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+    depends_on:
+      - auth-service
+      - measurement-service
+    networks:
+      - app-network
+
+  # Auth Service
+  auth-service:
+    build:
+      context: AuthService.API/
+      dockerfile: Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=AuthDb;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=true;
+    ports:
+      - "5001:80"
+    depends_on:
+      - sqlserver
+    networks:
+      - app-network
+
+  # SQL Server для AuthService
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=YourStrong@Passw0rd
+      - MSSQL_PID=Express
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    networks:
+      - app-network
+
+  # Pressure Measurement Service
+  measurement-service:
     build:
       context: PressureMeasurementApp.API/
       dockerfile: Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
-      - ASPNETCORE_URLS=http://+:5000
+      - ASPNETCORE_URLS=http://+:80
       - Kafka__BootstrapServers=kafka:9092
     ports:
-      - "5000:5000"
+      - "5000:80"
     depends_on:
       - redis
       - kafka
@@ -45,7 +92,8 @@ services:
     networks:
       - app-network
 
-  pressure-measurement-app.client:
+  # Client App
+  client-app:
     build:
       context: client-app/
       dockerfile: Dockerfile
@@ -53,10 +101,9 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=production
-      - NEXT_PUBLIC_API_URL=http://pressure-measurement-app.api:5000
+      - NEXT_PUBLIC_API_URL=http://localhost:8080
     depends_on:
-      pressure-measurement-app.api:
-        condition: service_healthy
+      - api-gateway
     networks:
       - app-network
 
@@ -66,3 +113,4 @@ networks:
 
 volumes:
   kafka_data:
+  sqlserver_data:

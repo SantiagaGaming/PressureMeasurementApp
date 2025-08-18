@@ -5,12 +5,12 @@ namespace PressureMeasurementApp.API.Interfaces
 {
     public interface IPressureMeasurementService
     {
-        Task<IEnumerable<PressureMeasurement>> GetMeasurementsAsync(DateTime from, DateTime till);
-        Task<IEnumerable<PressureMeasurement>> GetLatestMeasurementsAsync();
-        Task<PressureMeasurement> GetMeasurementAsync(int id);
+        Task<IEnumerable<PressureMeasurement>> GetMeasurementsAsync(DateTime from, DateTime till, int userId);
+        Task<IEnumerable<PressureMeasurement>> GetLatestMeasurementsAsync(int userId);
+        Task<PressureMeasurement> GetMeasurementAsync(int id, int userId);
         Task<PressureMeasurement> CreateMeasurementAsync(
-            List<PressureDto> pressures, LifestyleDto lifestyle);
-        Task UpdateMeasurementAsync(int id, PressureMeasurement request);
-        Task DeleteMeasurementAsync(int id);
+            List<PressureDto> pressures, LifestyleDto lifestyle, int userId);
+        Task UpdateMeasurementAsync(int id, PressureMeasurement request, int userId);
+        Task DeleteMeasurementAsync(int id, int userId);
     }
 }

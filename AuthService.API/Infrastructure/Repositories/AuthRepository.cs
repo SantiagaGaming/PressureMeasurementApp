@@ -35,7 +35,7 @@ namespace AuthService.API.Infrastructure.Repositories
                 throw new Exception("User doesn't exist");
 
             if (!BCrypt.Net.BCrypt.Verify(loginDto.Password, user.PasswordHash))
-                throw new Exception("Wrond password");
+                throw new Exception("Wrong password");
 
             return user;
         }

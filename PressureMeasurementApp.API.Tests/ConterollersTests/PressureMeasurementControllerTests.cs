@@ -30,7 +30,7 @@ namespace PressureMeasurementApp.API.Tests.ConterollersTests
             var measurements = new List<PressureMeasurement> { new PressureMeasurement() };
             var expectedResponse = new List<PressureMeasurementResponse> { new PressureMeasurementResponse() };
 
-            _mockService.Setup(s => s.GetMeasurementsAsync(fromDate, tillDate))
+            _mockService.Setup(s => s.GetMeasurementsAsync(fromDate, tillDate,1))
                 .ReturnsAsync(measurements);
             _mockMapper.Setup(m => m.Map<IEnumerable<PressureMeasurementResponse>>(measurements))
                 .Returns(expectedResponse);
@@ -51,7 +51,7 @@ namespace PressureMeasurementApp.API.Tests.ConterollersTests
             var measurements = new List<PressureMeasurement> { new PressureMeasurement() };
             var expectedResponse = new List<PressureMeasurementResponse> { new PressureMeasurementResponse() };
 
-            _mockService.Setup(s => s.GetLatestMeasurementsAsync())
+            _mockService.Setup(s => s.GetLatestMeasurementsAsync(1))
                 .ReturnsAsync(measurements);
             _mockMapper.Setup(m => m.Map<IEnumerable<PressureMeasurementResponse>>(measurements))
                 .Returns(expectedResponse);
@@ -73,7 +73,7 @@ namespace PressureMeasurementApp.API.Tests.ConterollersTests
             var measurement = new PressureMeasurement { Id = id };
             var expectedResponse = new PressureMeasurementResponse { Id = id };
 
-            _mockService.Setup(s => s.GetMeasurementAsync(id))
+            _mockService.Setup(s => s.GetMeasurementAsync(id, 1))
                 .ReturnsAsync(measurement);
             _mockMapper.Setup(m => m.Map<PressureMeasurementResponse>(measurement))
                 .Returns(expectedResponse);
@@ -94,7 +94,7 @@ namespace PressureMeasurementApp.API.Tests.ConterollersTests
             var id = 999;
             var errorMessage = "Measurement not found";
 
-            _mockService.Setup(s => s.GetMeasurementAsync(id))
+            _mockService.Setup(s => s.GetMeasurementAsync(id, 1))
                 .ThrowsAsync(new Exception(errorMessage));
 
             // Act
@@ -162,7 +162,7 @@ namespace PressureMeasurementApp.API.Tests.ConterollersTests
 
             _mockService.Setup(s => s.CreateMeasurementAsync(
                     It.IsAny<List<PressureDto>>(),
-                    It.IsAny<LifestyleDto>()))
+                    It.IsAny<LifestyleDto>(),1))
                 .ReturnsAsync(createdMeasurement);
 
             _mockMapper.Setup(m => m.Map<PressureMeasurementResponse>(createdMeasurement))
@@ -225,7 +225,7 @@ namespace PressureMeasurementApp.API.Tests.ConterollersTests
                 Lifestyle = new LifestyleDto()
             };
 
-            _mockService.Setup(s => s.CreateMeasurementAsync(request.Pressures, request.Lifestyle))
+            _mockService.Setup(s => s.CreateMeasurementAsync(request.Pressures, request.Lifestyle,1))
                 .ThrowsAsync(new Exception());
 
             // Act
@@ -243,7 +243,7 @@ namespace PressureMeasurementApp.API.Tests.ConterollersTests
             var id = 1;
             var request = new PressureMeasurement { Id = id };
 
-            _mockService.Setup(s => s.UpdateMeasurementAsync(id, request))
+            _mockService.Setup(s => s.UpdateMeasurementAsync(id, request,1))
                 .Returns(Task.CompletedTask);
 
             // Act
@@ -261,7 +261,7 @@ namespace PressureMeasurementApp.API.Tests.ConterollersTests
             var request = new PressureMeasurement { Id = id };
             var errorMessage = "Measurement not found";
 
-            _mockService.Setup(s => s.UpdateMeasurementAsync(id, request))
+            _mockService.Setup(s => s.UpdateMeasurementAsync(id, request,1))
                 .ThrowsAsync(new Exception(errorMessage));
 
             // Act
@@ -278,7 +278,7 @@ namespace PressureMeasurementApp.API.Tests.ConterollersTests
             // Arrange
             var id = 2;
 
-            _mockService.Setup(s => s.DeleteMeasurementAsync(id))
+            _mockService.Setup(s => s.DeleteMeasurementAsync(id, 1))
                 .Returns(Task.CompletedTask);
 
             // Act
@@ -295,7 +295,7 @@ namespace PressureMeasurementApp.API.Tests.ConterollersTests
             var id = 999;
             var errorMessage = "Measurement not found";
 
-            _mockService.Setup(s => s.DeleteMeasurementAsync(id))
+            _mockService.Setup(s => s.DeleteMeasurementAsync(id,1))
                 .ThrowsAsync(new Exception(errorMessage));
 
             // Act

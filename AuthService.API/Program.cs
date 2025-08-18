@@ -12,9 +12,11 @@ namespace AuthService.API
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static void Main(string[]args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            
+            // Добавляем CORS
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowAll", policy =>
@@ -24,12 +26,20 @@ namespace AuthService.API
                           .AllowAnyHeader();
                 });
             });
-            var connectionString = builder.Configuration.GetConnectionString("AppDbConnection");
-            builder.Services.AddDbContext<AuthDbContext>
-            (options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
+            // Настройка подключения к базе данных
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+            builder.Services.AddDbContext<AuthDbContext>(options => options.UseSqlServer(connectionString));
+   
+   
+            // Регистрация сервисов
             builder.Services.AddScoped<IAuthRepository, AuthRepository>();
             builder.Services.AddScoped<ITokenService, JwtTokenService>();
+
+            // Настройка JWT аутентификации
+            var jwtKey = builder.Configuration["Jwt:Key"];
+            var jwtIssuer = builder.Configuration["Jwt:Issuer"];
+            var jwtAudience = builder.Configuration["Jwt:Audience"];
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -37,13 +47,16 @@ namespace AuthService.API
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8
-                            .GetBytes(builder.Configuration["Jwt:Key"])),
-                        ValidateIssuer = false,
-                        ValidateAudience = false,
-                         ClockSkew = TimeSpan.Zero
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
+                        ValidateIssuer = true,
+                        ValidIssuer = jwtIssuer,
+                        ValidateAudience = true,
+                        ValidAudience = jwtAudience,
+                        ValidateLifetime = true,
+                        ClockSkew = TimeSpan.Zero
                     };
                 });
+
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -56,8 +69,8 @@ namespace AuthService.API
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection(); 
-            app.UseCors("AllowAll"); 
+            app.UseHttpsRedirection();
+            app.UseCors("AllowAll");
             app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();

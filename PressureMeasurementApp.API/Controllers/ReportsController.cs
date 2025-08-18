@@ -10,10 +10,13 @@ namespace PressureMeasurementApp.API.Controllers
     [ApiController]
     public class ReportsController(IPressureMeasurementService measurementService, IMapper mapper, IParseToFile<PressureMeasurementToFile> converter) : ControllerBase
     {
+
         [HttpGet("xlsxLatest")]
         public async Task<IActionResult> GetXlsxLatest()
         {
-            var measurements = await measurementService.GetLatestMeasurementsAsync();
+            var userId = GetUserIdFromHeaders();
+            var measurements = await measurementService.GetLatestMeasurementsAsync(userId);
+
             if (measurements == null || !measurements.Any())
                 return NotFound("No measurements in this period.");
 
@@ -37,7 +40,9 @@ namespace PressureMeasurementApp.API.Controllers
             if (from > till)
                 return BadRequest("Start date cannot be later than end date");
 
-            var measurements = await measurementService.GetMeasurementsAsync(from, till);
+            var userId = GetUserIdFromHeaders();
+            var measurements = await measurementService.GetMeasurementsAsync(from, till, userId);
+
             if (measurements == null || !measurements.Any())
                 return NotFound("No measurements in this period.");
 
@@ -54,6 +59,15 @@ namespace PressureMeasurementApp.API.Controllers
             {
                 return BadRequest(new { Error = "Error while parsing measurements to xlsx", Details = ex.Message });
             }
+        }
+        private int GetUserIdFromHeaders()
+        {
+            var userIdHeader = Request.Headers["X-User-Id"].FirstOrDefault();
+            if (string.IsNullOrEmpty(userIdHeader) || !int.TryParse(userIdHeader, out int userId))
+            {
+                throw new UnauthorizedAccessException("User ID is required");
+            }
+            return userId;
         }
     }
 }

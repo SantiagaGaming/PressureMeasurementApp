@@ -14,8 +14,10 @@ namespace PressureMeasurementApp.API.Data.Entitites
         public bool Alcohol { get; set; }
         public bool Sport { get; set; }
         public bool Stretching { get; set; }
+        
         [ForeignKey(nameof(PressureStateId))]
         public PressureState? PressureState { get; set; }
         public int? PressureStateId { get; set; }
+        public int? UserId { get; set; }
     }
 }
