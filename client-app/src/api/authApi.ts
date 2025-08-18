@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { LoginRequest, RegisterRequest, AuthResponse } from '@/shared/types/auth.types';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+const API_BASE_URL =  'http://localhost:8080';
 
 const authApi = axios.create({
     baseURL: API_BASE_URL,
@@ -9,12 +9,14 @@ const authApi = axios.create({
 
 export const AuthService = {
     login: async (credentials: LoginRequest): Promise<AuthResponse> => {
-        const response = await authApi.post<AuthResponse>('/auth/login', credentials);
+        const response = await authApi.post<AuthResponse>('/auth/api/login', credentials);
         return response.data;
     },
 
     register: async (userData: RegisterRequest): Promise<AuthResponse> => {
-        const response = await authApi.post<AuthResponse>('/auth/register', userData);
+           console.log(userData)
+        const response = await authApi.post<AuthResponse>('/auth/api/register', userData);
+     
         return response.data;
     },
 
@@ -27,7 +29,7 @@ export const AuthService = {
     },
 
     validateToken: async (token: string): Promise<{ valid: boolean }> => {
-        const response = await authApi.get<{ valid: boolean }>('/auth/validate', {
+        const response = await authApi.get<{ valid: boolean }>('/auth/auth/validate', {
             headers: {
                 Authorization: `Bearer ${token}`
             }

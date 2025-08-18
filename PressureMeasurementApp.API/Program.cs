@@ -28,7 +28,7 @@ namespace PressureMeasurementApp.API
             builder.Services.AddHttpClient();
             builder.Services.AddHttpContextAccessor();
             var connectionString = builder.Configuration.GetConnectionString("AppDbConnection");
-            builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
+            builder.Services.AddDbContext<AppDbContext>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
             builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
             {
                 var configuration = ConfigurationOptions.Parse(builder.Configuration.GetConnectionString("Redis"));

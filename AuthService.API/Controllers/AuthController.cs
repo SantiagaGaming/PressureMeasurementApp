@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Cors;
 namespace AuthService.API.Controllers
 {
     [ApiController]
-    [Route("api/auth")]
+    [Route("api")]
     [EnableCors("AllowAll")]
     public class AuthController : ControllerBase
     {

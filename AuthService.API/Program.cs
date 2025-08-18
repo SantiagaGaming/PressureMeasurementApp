@@ -29,9 +29,9 @@ namespace AuthService.API
 
             // Настройка подключения к базе данных
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-            builder.Services.AddDbContext<AuthDbContext>(options => options.UseSqlServer(connectionString));
-   
-   
+            builder.Services.AddDbContext<AuthDbContext>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+
+
             // Регистрация сервисов
             builder.Services.AddScoped<IAuthRepository, AuthRepository>();
             builder.Services.AddScoped<ITokenService, JwtTokenService>();

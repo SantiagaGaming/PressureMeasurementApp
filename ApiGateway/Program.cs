@@ -62,6 +62,7 @@ namespace ApiGateway
             // Middleware для валидации JWT токенов
             app.Use(async (context, next) =>
             {
+                Console.WriteLine($"Request received: {context.Request.Method} {context.Request.Path}");
                 // Пропускаем запросы к аутентификации и документации
                 if (context.Request.Path.StartsWithSegments("/auth") ||
                     context.Request.Path.StartsWithSegments("/swagger") ||

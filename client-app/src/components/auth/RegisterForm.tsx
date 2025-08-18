@@ -13,16 +13,16 @@ interface RegisterFormProps {
 export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onSwitchToLogin }) => {
     const [formData, setFormData] = useState<RegisterRequest>({
         email: '',
-        password: ''
+        password: '',
+        confirmPassword:''
     });
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
+   const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         
-        if (formData.password !== confirmPassword) {
+        if (formData.password !== formData.confirmPassword) {
             setError('Пароли не совпадают');
             return;
         }
@@ -31,7 +31,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onSwitchT
         setError('');
 
         try {
-            const response = await AuthService.register(formData);
+       const response = await AuthService.register(formData);
             onSuccess(response.token, response.user);
         } catch (err: any) {
             setError(err.response?.data?.error || 'Ошибка регистрации');
@@ -87,8 +87,9 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onSwitchT
                     <input
                         type="password"
                         id="confirmPassword"
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
+                         name="confirmPassword"
+                        value={formData.confirmPassword}
+                        onChange={handleChange }
                         required
                         className={styles.input}
                         placeholder="Повторите пароль"
