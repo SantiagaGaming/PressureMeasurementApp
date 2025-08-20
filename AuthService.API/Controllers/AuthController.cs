@@ -1,7 +1,8 @@
 using AuthService.API.Data.Dto;
 using AuthService.API.Interfaces;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AuthService.API.Controllers
 {
@@ -50,12 +51,13 @@ namespace AuthService.API.Controllers
         }
 
         [HttpGet("validate")]
-        public IActionResult ValidateToken([FromHeader(Name = "Authorization")] string authorization)
+        [AllowAnonymous] 
+        public IActionResult ValidateToken([FromHeader(Name = "Authorization")] string token)
         {
-            if (string.IsNullOrEmpty(authorization))
+            if (string.IsNullOrEmpty(token))
                 return BadRequest(new { valid = false, error = "Authorization header is required" });
 
-            var isValid = _tokenService.ValidateToken(authorization);
+            var isValid = _tokenService.ValidateToken(token);
             return Ok(new { valid = isValid });
         }
 

@@ -23,19 +23,18 @@ namespace AuthService.API.Services
         {
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Email, user.Email)
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()), 
+                new Claim(ClaimTypes.Email, user.Email),                  
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-                _config.GetSection("Jwt:Key").Value));
-
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.Now.AddDays(1),
+                Expires = DateTime.UtcNow.AddHours(1), 
                 Issuer = _config["Jwt:Issuer"],
                 Audience = _config["Jwt:Audience"],
                 SigningCredentials = creds
@@ -51,7 +50,6 @@ namespace AuthService.API.Services
             if (string.IsNullOrEmpty(token))
                 return false;
 
-            // Убираем "Bearer " префикс если есть
             if (token.StartsWith("Bearer "))
                 token = token.Substring(7);
 
@@ -62,6 +60,7 @@ namespace AuthService.API.Services
             {
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var key = Encoding.UTF8.GetBytes(_config["Jwt:Key"]);
+
                 tokenHandler.ValidateToken(token, new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
@@ -73,6 +72,7 @@ namespace AuthService.API.Services
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.Zero
                 }, out _);
+
                 return true;
             }
             catch
@@ -83,7 +83,12 @@ namespace AuthService.API.Services
 
         public string GetTokenFromHeader(string authorizationHeader)
         {
-            return authorizationHeader.Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(authorizationHeader))
+                return string.Empty;
+
+            return authorizationHeader.StartsWith("Bearer ")
+                ? authorizationHeader.Substring(7)
+                : authorizationHeader;
         }
     }
 }

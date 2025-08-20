@@ -13,7 +13,6 @@ namespace ApiGateway
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Добавляем CORS
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowAll", policy =>
@@ -24,14 +23,11 @@ namespace ApiGateway
                 });
             });
 
-            // Настройка reverse proxy
             builder.Services.AddReverseProxy()
                 .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 
             builder.Services.AddHttpClient();
             builder.Services.AddMemoryCache();
-
-            // Настройка JWT аутентификации
             var jwtKey = builder.Configuration["Jwt:Key"];
             var jwtIssuer = builder.Configuration["Jwt:Issuer"];
             var jwtAudience = builder.Configuration["Jwt:Audience"];
@@ -56,10 +52,8 @@ namespace ApiGateway
 
             var app = builder.Build();
 
-            // Добавляем CORS middleware
             app.UseCors("AllowAll");
 
-            // Middleware для валидации JWT токенов
             app.Use(async (context, next) =>
             {
                 Console.WriteLine($"Request received: {context.Request.Method} {context.Request.Path}");
@@ -72,7 +66,6 @@ namespace ApiGateway
                     return;
                 }
 
-                // Проверяем наличие токена в заголовке
                 var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Replace("Bearer ", "");
 
                 if (string.IsNullOrEmpty(token))
@@ -82,14 +75,12 @@ namespace ApiGateway
                     return;
                 }
 
-                // Валидируем токен через AuthService
                 try
                 {
                     var cache = context.RequestServices.GetRequiredService<IMemoryCache>();
                     var httpClientFactory = context.RequestServices.GetRequiredService<IHttpClientFactory>();
                     var httpClient = httpClientFactory.CreateClient();
 
-                    // Проверяем кэш
                     if (cache.TryGetValue($"token_{token}", out bool isValid))
                     {
                         if (!isValid)
@@ -102,9 +93,8 @@ namespace ApiGateway
                     else
                     {
                         // Валидируем токен через AuthService
-                        var authServiceUrl = builder.Environment.IsDevelopment() 
-                            ? "http://localhost:5206/api/auth/validate"
-                            : "http://auth-service/api/auth/validate";
+                        var authServiceUrl = "http://localhost:5206/api/validate";
+
                         var validationRequest = new HttpRequestMessage(HttpMethod.Get, authServiceUrl);
                         validationRequest.Headers.Add("Authorization", $"Bearer {token}");
 
@@ -112,18 +102,15 @@ namespace ApiGateway
 
                         if (!validationResponse.IsSuccessStatusCode)
                         {
-                            // Кэшируем невалидный токен на 5 минут
                             cache.Set($"token_{token}", false, TimeSpan.FromMinutes(5));
                             context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
                             await context.Response.WriteAsync("Invalid token");
                             return;
                         }
 
-                        // Кэшируем валидный токен на 15 минут
                         cache.Set($"token_{token}", true, TimeSpan.FromMinutes(15));
                     }
 
-                    // Добавляем информацию о пользователе в заголовки для передачи в микросервисы
                     try
                     {
                         var tokenHandler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
@@ -142,7 +129,7 @@ namespace ApiGateway
                     }
                     catch
                     {
-                        // Игнорируем ошибки парсинга токена
+    
                     }
                 }
                 catch (Exception ex)
